@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TabyMakeup</title>
+  <link rel="stylesheet" href="estilos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/css/lightbox.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2/dist/js/lightbox-plus-jquery.min.js"></script>  
+  <link rel="icon" href="logo.png" type="image/webp">
+</head>
+<body>
+  
+  <header>
+    <h1 class="logo">
+      <span class="nombre">Taby</span><span class="makeup">Makeup</span>
+    </h1>
+    <button id="scrollTopBtn" title="Volver arriba">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    
+    
+    <a href="carrito.html" class="carrito-flotante" data-count="0">
+      🛒
+      <span class="carrito-contador">0</span>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#todos">Todos los productos</a></li>
+        <li><a href="#iluminadores">Iluminadores y contornos</a></li>
+        <li><a href="#base">Base</a></li>
+        <li><a href="#brochas">Brochas</a></li>
+        <li><a href="#delineadores">Delineadores</a></li>
+        <li><a href="#fijador">Fijador</a></li>
+        <li><a href="#mascara">Máscara de pestañas</a></li>
+        <li><a href="#polvos">Polvos</a></li>
+        <li><a href="#rubor">Rubor</a></li>
+        <li><a href="#sombras">Sombras</a></li>
+        <li><a href="#arqueadores">Arqueadores</a></li>
+        <li><a href="#brillos">Brillos/Glitter</a></li>
+        <li><a href="#correctores">Correctores</a></li>
+        <li><a href="#esponjitas">Esponjitas</a></li>
+        <li><a href="#labiales">Labiales</a></li>
+        <li><a href="#pestanas-cejas">Pestaña/Cejas</a></li>
+        <li><a href="#primer">Primer</a></li>
+        <li><a href="#skalas">Skalas</a></li>
+        <li><a href="#skincare">Skincare</a></li>
+        <li><a href="#varios">Varios</a></li>
+      </ul>
+    </nav> 
+  </header>
+  
+
+  <section class="banner-bienvenida">
+    <div class="banner-content">
+      <h2>¡Bienvenidos a <span class="resaltado">TabyMakeup</span>!</h2>
+      <p>Gracias por visitarnos, estamos acá para ayudarte a encontrar el maquillaje ideal para realzar tu belleza.</p>
+      <div class="redes-sociales">
+        <a href="https://www.instagram.com/taby.makeup/" target="_blank" aria-label="Instagram" class="icono-red">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook" class="icono-red">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+  
+
+  <input type="text" id="searchInput" placeholder="Buscar producto..." />
+  <main>
+    <!-- Todos los productos -->
+    <section id="todos" class="seccion-productos">
+      <h2>Todos los productos</h2>
+      <div class="productos-container" id="contenedor-todos"></div>
+    </section>
+   
+    <!-- Iluminadores y contornos -->
+    <section id="iluminadores" class="seccion-productos">
+      <h2>Iluminadores y contornos</h2>
+      <div class="productos-container">
+        <div class="producto">
+          <a href="https://raw.githubusercontent.com/demosprojects/productos/main/sombra-iluminador.jpg" data-lightbox="galeria" data-title="">
+            <img src="https://raw.githubusercontent.com/demosprojects/productos/main/sombra-iluminador.jpg" alt="Sombra/iluminador Lila D'hermosa" class="imagen-producto">
+          </a>
+          <h3>Sombra/iluminador Lila D'hermosa</h3>
+          <p>Precio: $<span class="precio">3.200</span></p>
+          <button class="agregar-carrito" data-id="2" data-nombre="Sombra/iluminador Lila D'hermosa" data-precio="3200">Agregar al carrito</button>
+        </div>
+
+        <div class="producto">
+          <a href="https://raw.githubusercontent.com/demosprojects/productos/main/sombra-iluminadormenta.jpg" data-lightbox="galeria" data-title="">
+            <img src="https://raw.githubusercontent.com/demosprojects/productos/main/sombra-iluminadormenta.jpg" alt="Sombra/iluminador Menta D'hermosa" class="imagen-producto">
+          </a>
+          <h3>Sombra/iluminador Menta D'hermosa</h3>
+          <p>Precio: $<span class="precio">3.200</span></p>
+          <button class="agregar-carrito" data-id="3" data-nombre="Sombra/iluminador Menta D'hermosa" data-precio="3200">Agregar al carrito</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Base -->
+    <section id="base" class="seccion-productos">
+      <h2>Base</h2>
+      <div class="productos-container">
+        <div class="producto">
+          <a href="https://raw.githubusercontent.com/demosprojects/productos/main/basemate.jpg" data-lightbox="galeria" data-title="">
+            <img src="https://raw.githubusercontent.com/demosprojects/productos/main/basemate.jpg" alt="Base color acabado Mate" class="imagen-producto">
+          </a>
+          <h3>Base color acabado Mate</h3>
+          <p>Precio: $<span class="precio">8000</span></p>
+          <button class="agregar-carrito" data-id="5" data-nombre="Base color acabado Mate" data-precio="8000">Agregar al carrito</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Resto de las secciones de productos (misma estructura) -->
+    
+  </main>
+
+  <footer>
+    <div class="footer-redes">
+      <a href="https://www.instagram.com/taby.makeup/" target="_blank" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.facebook.com/tu_usuario" target="_blank" aria-label="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </div>
+    <p>&copy; 2025 TabyMakeup. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Mostrar/ocultar el botón según scroll
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
+    window.onscroll = function () {
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        scrollTopBtn.style.display = "block";
+      } else {
+        scrollTopBtn.style.display = "none";
+      }
+    };
+  
+    // Volver arriba
+    scrollTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+  
+</body>
+</html>

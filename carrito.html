@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TabyMakeup | Carrito</title>
+  <link rel="stylesheet" href="carrito.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="icon" href="logo.png" type="image/webp">
+</head>
+<body>
+  <header>
+    <h1 class="logo">
+      <span class="nombre">Taby</span><span class="makeup">Makeup</span>
+    </h1>
+   
+    <nav>
+      <ul>
+        <li><a href="index.html">Volver al inicio</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="carrito">
+      <h2>Productos seleccionados</h2>
+      <ul id="lista-carrito">
+        <!-- Productos se generan dinámicamente -->
+      </ul>
+      <p>Total: $<span id="total"></span></p>
+      <button id="btn-whatsapp">
+        <i class="fab fa-whatsapp" style="margin-right: 10px;"></i> Enviar pedido
+      </button>
+      
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-redes">
+      <a href="https://www.instagram.com/taby.makeup/" target="_blank" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </div>
+    <p>&copy; 2025 TabyMakeup. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="carrito.js"></script>
+</body>
+</html>
