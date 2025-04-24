@@ -166,7 +166,13 @@ main {
   margin: 0;
   align-self: start;
 }
-
+#lista-carrito:empty::before {
+  content: 'Tu carrito está vacío.';
+  display: block;
+  text-align: center;
+  color: var(--rosa-oscuro);
+  font-style: italic;
+  p
 .cantidad-controles {
   grid-area: cantidad;
   display: flex;
