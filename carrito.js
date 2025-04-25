@@ -1,6 +1,7 @@
 const listaCarrito = document.getElementById('lista-carrito');
 const totalElemento = document.getElementById('total');
 const btnWhatsApp = document.getElementById('btn-whatsapp');
+const btnEliminarTodo = document.getElementById('btn-eliminar-todo'); // Botón nuevo
 
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
@@ -32,10 +33,10 @@ function renderizarCarrito() {
 
 function eliminarProducto(index) {
   const producto = carrito[index];
-  
+
   Swal.fire({
     title: '¿Eliminar producto?',
-    html: `¿Estás seguro que deseas eliminar <strong>${producto.nombre}</strong> del carrito? Esta acción eliminará todos los productos.`,
+    html: `¿Estás seguro que deseas eliminar <strong>${producto.nombre}</strong> del carrito?`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
@@ -47,13 +48,43 @@ function eliminarProducto(index) {
       carrito.splice(index, 1);
       localStorage.setItem('carrito', JSON.stringify(carrito));
       renderizarCarrito();
-      
+
       Swal.fire(
         'Eliminado',
-        'Los productos fueron eliminados del carrito',
+        'El producto fue eliminado del carrito',
         'success'
       );
     }
+  });
+}
+
+// Botón eliminar todo
+if (btnEliminarTodo) {
+  btnEliminarTodo.addEventListener('click', () => {
+    if (carrito.length === 0) return;
+
+    Swal.fire({
+      title: '¿Vaciar carrito?',
+      text: 'Esta acción eliminará todos los productos del carrito.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, vaciar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        carrito = [];
+        localStorage.removeItem('carrito');
+        renderizarCarrito();
+
+        Swal.fire(
+          'Carrito vacío',
+          'Todos los productos fueron eliminados',
+          'success'
+        );
+      }
+    });
   });
 }
 
@@ -65,7 +96,7 @@ function actualizarWhatsApp() {
   }
 
   let mensaje = "¡Hola! \n\nQuiero comprar los siguiente productos:\n\n";
-  
+
   carrito.forEach(producto => {
     mensaje += `• ${producto.nombre}\n`;
     mensaje += `  Cantidad: ${producto.cantidad}\n`;
@@ -74,15 +105,41 @@ function actualizarWhatsApp() {
   });
 
   let total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
-  mensaje += ` *Total del pedido:* $${total}\n\n`;
+  mensaje += `*Total del pedido:* $${total}\n\n`;
   mensaje += "¡Gracias! ";
 
   const telefono = "543735401893"; // Reemplazar con tu número real
   const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
 
   btnWhatsApp.disabled = false;
-  btnWhatsApp.onclick = () => window.open(url, '_blank');
+  btnWhatsApp.onclick = () => {
+    // Paso 1: Mostrar mensaje de "Enviando pedido..." con barrita de carga
+    Swal.fire({
+      title: 'Enviando pedido...',
+      text: 'Redirigiendo a WhatsApp',
+      icon: 'info',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true, // Barrita de carga activada
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      didClose: () => {
+        // Paso 2: Redirigir a WhatsApp
+        window.open(url, '_blank');
+
+        // Paso 3: Vaciar carrito después de redirigir
+        setTimeout(() => {
+          carrito = [];
+          localStorage.removeItem('carrito');
+          renderizarCarrito();
+        }, 500);
+      }
+    });
+  };
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   renderizarCarrito();
