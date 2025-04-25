@@ -9,15 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" href="logo.png" type="image/webp">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9N8X2J1R1G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9N8X2J1R1G');
-</script>
 </head>
 <body>
   <header>
@@ -39,6 +30,10 @@
         <!-- Productos se generan dinámicamente -->
       </ul>
       <p>Total: $<span id="total"></span></p>
+      <button id="btn-eliminar-todo" class="btn-eliminar-todo">
+        Vaciar carrito
+      </button>
+      
       <button id="btn-whatsapp">
         <i class="fab fa-whatsapp" style="margin-right: 10px;"></i> Enviar pedido
       </button>
