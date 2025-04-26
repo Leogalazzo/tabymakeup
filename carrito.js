@@ -95,7 +95,7 @@ function actualizarWhatsApp() {
     return;
   }
 
-  let mensaje = "¡Hola! \n\nQuiero comprar los siguiente productos:\n\n";
+  let mensaje = "¡Hola! \n\nQuiero comprar los siguientes productos:\n\n";
 
   carrito.forEach(producto => {
     mensaje += `• ${producto.nombre}\n`;
