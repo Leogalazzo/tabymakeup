@@ -793,3 +793,338 @@ footer {
   background: transparent !important;
   text-shadow: 0 0 5px black;
 }
+
+
+/* ==================== */
+/* MODAL DE TONOS */
+/* ==================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(51, 51, 51, 0.5);
+  backdrop-filter: blur(2px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-contenido {
+  background: var(--blanco);
+  margin: 5vh auto;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: var(--sombra);
+  position: relative;
+  border: 2px solid var(--rosa-claro);
+  animation: pulse 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-contenido::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--glitter-rosa);
+  background-size: 200% 200%;
+  animation: glitter 5s ease infinite;
+}
+
+.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: var(--rosa-oscuro);
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transicion);
+  z-index: 1;
+}
+
+.cerrar:hover,
+.cerrar:focus {
+  color: var(--rosa-principal);
+  transform: scale(1.1);
+}
+
+.modal-contenido h2 {
+  color: var(--rosa-oscuro);
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  margin-bottom: 1rem;
+  text-align: center;
+  border-bottom: 2px solid var(--rosa-claro);
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+.tonos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.tono {
+  background-color: var(--rosa-claro);
+  color: var(--negro);
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transicion);
+  border: 1px solid var(--rosa-principal);
+  font-size: clamp(0.8rem, 3vw, 0.9rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 60px;
+  justify-content: center;
+}
+
+.tono:hover {
+  background-color: var(--rosa-principal);
+  color: var(--blanco);
+  transform: translateY(-2px);
+}
+
+.tono.seleccionado {
+  background: var(--rosa-oscuro);
+  color: var(--blanco);
+  border-color: var(--rosa-oscuro);
+  box-shadow: 0 3px 8px rgba(216, 90, 127, 0.4);
+  transform: scale(1.05);
+}
+
+.vista-previa {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+}
+
+.vista-previa h3 {
+  color: var(--rosa-oscuro);
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+#imagenVistaPrevia {
+  max-width: min(200%, 300px);
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid var(--rosa-claro);
+  transition: var(--transicion);
+  object-fit: contain;
+  display: block;
+}
+
+.modal-contenido button {
+  background: var(--rosa-principal);
+  color: var(--blanco);
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 1rem;
+  box-shadow: 0 3px 8px rgba(255, 155, 179, 0.4);
+  transition: var(--transicion);
+  font-size: clamp(0.9rem, 3.5vw, 1rem);
+  cursor: pointer;
+}
+
+.modal-contenido button:hover {
+  background: var(--rosa-oscuro);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(216, 90, 127, 0.5);
+}
+
+/* ==================== */
+/* MODAL DE IMAGEN AMPLIADA */
+/* ==================== */
+.modal-imagen {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  overflow: auto;
+  animation: fadeIn 0.3s;
+  touch-action: manipulation;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-imagen-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.contenido-imagen {
+  max-width: 100%;
+  max-height: calc(100vh - 100px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  animation: zoomIn 0.3s;
+  margin: 0 auto;
+  display: block;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.95); }
+  to { transform: scale(1); }
+}
+
+.pie-imagen {
+  color: #fff;
+  padding: 15px 0;
+  font-size: 1rem;
+  text-align: center;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.cerrar-imagen {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  color: #f1f1f1;
+  font-size: 35px;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+  z-index: 1;
+  background: rgba(0,0,0,0.5);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.cerrar-imagen:hover,
+.cerrar-imagen:focus {
+  color: var(--rosa-principal);
+  text-decoration: none;
+  transform: scale(1.1);
+}
+
+.imagen-ampliable {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.imagen-ampliable:hover {
+  transform: scale(1.02);
+}
+
+/* ==================== */
+/* MEDIA QUERIES RESPONSIVE */
+/* ==================== */
+@media (max-width: 576px) {
+  .modal-contenido {
+    padding: 1.2rem;
+    margin: 2vh auto;
+  }
+  
+  .tonos-container {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.6rem;
+  }
+  
+  .tono {
+    padding: 0.5rem 0.3rem;
+    min-height: 50px;
+  }
+  
+  #imagenVistaPrevia {
+    max-height: 150px;
+  }
+  
+  .cerrar-imagen {
+    top: 15px;
+    right: 15px;
+    font-size: 30px;
+  }
+}
+
+@media (min-width: 768px) {
+  .modal-contenido {
+    max-width: 500px;
+  }
+  
+  .tonos-container {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  }
+  
+  #imagenVistaPrevia {
+    max-width: 220px;
+    max-height: 200px;
+  }
+}
+
+@media (min-width: 992px) {
+  .modal-contenido {
+    max-width: 550px;
+  }
+  
+  .contenido-imagen {
+    max-width: 85%;
+  }
+}
+
+/* Para dispositivos muy pequeños (ej: iPhone 5/SE) */
+@media (max-width: 320px) {
+  .tonos-container {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  }
+  
+  .tono {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.2rem;
+  }
+  
+  .vista-previa {
+    min-height: 160px;
+  }
+  
+  #imagenVistaPrevia {
+    max-height: 120px;
+  }
+}
