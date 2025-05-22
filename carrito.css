@@ -53,6 +53,7 @@ header h1 {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   letter-spacing: 1px;
 }
+
 nav ul {
   display: flex;
   justify-content: center;
@@ -124,7 +125,7 @@ main {
 }
 
 /* ==================== */
-/* LISTA DEL CARRITO - NUEVO DISEÑO */
+/* LISTA DEL CARRITO - NUEVO DISEÑO CON IMAGEN */
 /* ==================== */
 #lista-carrito {
   list-style: none;
@@ -136,10 +137,9 @@ main {
 
 #lista-carrito li {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 60px 1fr auto auto auto;
   grid-template-areas: 
-    "nombre eliminar"
-    "precio cantidad";
+    "imagen nombre precio cantidad eliminar";
   align-items: center;
   gap: 0.8rem;
   padding: 1rem;
@@ -148,6 +148,15 @@ main {
   border-radius: 10px;
   border-left: 4px solid var(--rosa-principal);
   transition: var(--transicion);
+}
+
+#lista-carrito .producto-imagen {
+  grid-area: imagen;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--rosa-claro);
 }
 
 #lista-carrito .nombre-producto {
@@ -164,7 +173,7 @@ main {
   color: var(--rosa-oscuro);
   font-size: 0.95rem;
   margin: 0;
-  align-self: start;
+  align-self: center;
 }
 
 .cantidad-controles {
@@ -172,7 +181,7 @@ main {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  justify-self: end;
+  justify-self: center;
 }
 
 .cantidad-controles button {
@@ -199,7 +208,7 @@ main {
   color: var(--negro);
 }
 
-#lista-carrito .eliminar-producto {
+#lista-carrito .btn-eliminar {
   grid-area: eliminar;
   background-color: var(--rosa-claro);
   color: var(--blanco);
@@ -215,10 +224,11 @@ main {
   justify-self: end;
 }
 
-#lista-carrito .eliminar-producto:hover {
+#lista-carrito .btn-eliminar:hover {
   background-color: var(--rosa-oscuro);
   transform: rotate(90deg);
 }
+
 #lista-carrito:empty::before {
   content: 'Tu carrito está vacío';
   display: block;
@@ -227,6 +237,7 @@ main {
   font-style: italic;
   padding: 2rem 0;
 }
+
 /* ==================== */
 /* TOTAL Y BOTÓN */
 /* ==================== */
@@ -275,24 +286,31 @@ footer {
   background: var(--glitter-rosa);
   background-size: 200% 200%;
   animation: glitter 5s ease infinite;
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   text-align: center;
-  padding: 1.5rem;
-  width: 100%;
+  padding: 1rem;
+  margin-top: 1.2rem;
   font-weight: 500;
+  font-size: 0.8rem;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.footer-redes {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
 }
 
 .footer-redes a {
-  color: var(--blanco);
-  font-size: clamp(1.5rem, 3vw, 1.7rem);
-  margin: 0 0.6rem;
+  color: var(--texto-oscuro);
+  font-size: 1.2rem;
   transition: transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
 }
 
 .footer-redes a:hover {
-  color: #ffd1e3;
-  transform: scale(1.2);
+  color: var(--rosa-oscuro);
+  transform: scale(1.1);
 }
 
 /* ==================== */
@@ -355,8 +373,8 @@ footer {
 /* Tablets (768px - 1024px) */
 @media (min-width: 768px) {
   #lista-carrito li {
-    grid-template-columns: 2fr 1fr auto auto;
-    grid-template-areas: "nombre precio cantidad eliminar";
+    grid-template-columns: 60px 2fr 1fr auto auto;
+    grid-template-areas: "imagen nombre precio cantidad eliminar";
     align-items: center;
   }
   
@@ -372,8 +390,8 @@ footer {
 /* Desktop (1024px+) */
 @media (min-width: 1024px) {
   #lista-carrito li {
-    display: flex;
-    justify-content: space-between;
+    grid-template-columns: 60px 2fr 1fr auto auto;
+    grid-template-areas: "imagen nombre precio cantidad eliminar";
     align-items: center;
   }
   
@@ -457,6 +475,19 @@ footer {
     width: 18px;
     font-size: 0.9rem;
   }
+  
+  #lista-carrito li {
+    grid-template-columns: 60px 1fr auto;
+    grid-template-areas: 
+      "imagen nombre eliminar"
+      "imagen precio cantidad";
+    gap: 0.5rem;
+  }
+  
+  #lista-carrito .producto-imagen {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 /* Pantallas muy pequeñas (hasta 400px) */
@@ -479,6 +510,13 @@ footer {
   
   #lista-carrito li {
     padding: 0.8rem;
+    grid-template-columns: 60px 1fr;
+    grid-template-areas: 
+      "imagen nombre"
+      "imagen precio"
+      "imagen cantidad"
+      "imagen eliminar";
+    gap: 0.5rem;
   }
   
   #btn-whatsapp {
@@ -486,21 +524,26 @@ footer {
     padding: 0.8rem;
   }
   
+  #lista-carrito .producto-imagen {
+    width: 40px;
+    height: 40px;
+  }
+  
   /* Ajuste especial para móviles muy pequeños */
   @media (max-width: 360px) {
     #lista-carrito li {
-      grid-template-columns: 1fr;
+      grid-template-columns: 60px 1fr;
       grid-template-areas: 
-        "nombre"
-        "precio"
-        "cantidad"
-        "eliminar";
-      text-align: center;
+        "imagen nombre"
+        "imagen precio"
+        "imagen cantidad"
+        "imagen eliminar";
+      text-align: left;
     }
     
     .cantidad-controles,
-    #lista-carrito .eliminar-producto {
-      justify-self: center;
+    #lista-carrito .btn-eliminar {
+      justify-self: start;
     }
     
     #lista-carrito .precio-producto {
@@ -538,10 +581,12 @@ footer {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(216, 90, 127, 0.4);
 }
+
 .btn-eliminar-todo::before {
   content: "🗑️";
   font-size: 0.9rem;
 }
+
 /* Efecto de glitter al hacer hover */
 .btn-eliminar-todo:hover::after {
   content: '';
