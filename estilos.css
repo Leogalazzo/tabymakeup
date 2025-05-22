@@ -7,8 +7,10 @@
   --rosa-oscuro: #d85a7f;
   --glitter-rosa: linear-gradient(135deg, #ff9bb3 0%, #ffc0cb 50%, #ff9bb3 100%);
   --dorado: #ffd700;
-  --blanco: #ffffff;
+  --blanco: #f8f1f3;
   --negro: #333333;
+  --texto-oscuro: #4a2a33;
+  --texto-agregar:#2e0410 ;
   --sombra: 0 4px 15px rgba(216, 90, 127, 0.2);
   --sombra-hover: 0 6px 20px rgba(216, 90, 127, 0.3);
   --transicion: all 0.3s ease;
@@ -56,7 +58,7 @@ header {
   background: var(--glitter-rosa);
   background-size: 200% 200%;
   animation: glitter 5s ease infinite;
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   padding: 0.8rem 0;
   box-shadow: var(--sombra);
   position: relative;
@@ -67,7 +69,7 @@ header h1 {
   text-align: center;
   font-size: 1.4rem;
   margin-bottom: 0.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
   letter-spacing: 1px;
 }
 
@@ -109,11 +111,8 @@ nav {
   padding: 0.5rem 0.8rem;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-scrollbar-color: var(--rosa-oscuro) transparent;
-
+  scrollbar-color: var(--rosa-oscuro) transparent;
 }
-
-
 
 nav ul {
   display: inline-flex;
@@ -141,6 +140,7 @@ nav li a:hover {
 
 nav li:last-child a {
   background-color: var(--rosa-oscuro);
+  color: var(--blanco);
   font-weight: bold;
 }
 
@@ -270,7 +270,7 @@ button {
 
 .agregar-carrito {
   background-color: var(--rosa-principal);
-  color: white;
+  color: var(--texto-agregar);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 50px;
@@ -295,12 +295,13 @@ footer {
   background: var(--glitter-rosa);
   background-size: 200% 200%;
   animation: glitter 5s ease infinite;
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   text-align: center;
   padding: 1rem;
   margin-top: 1.2rem;
   font-weight: 500;
   font-size: 0.8rem;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 .footer-redes {
@@ -311,13 +312,13 @@ footer {
 }
 
 .footer-redes a {
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   font-size: 1.2rem;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .footer-redes a:hover {
-  color: #ffd1e3;
+  color: var(--rosa-oscuro);
   transform: scale(1.1);
 }
 
@@ -329,7 +330,7 @@ footer {
   bottom: 1.2rem;
   right: 1.2rem;
   background-color: var(--rosa-oscuro);
-  color: white;
+  color: var(--blanco);
   width: 45px;
   height: 45px;
   border-radius: 50%;
@@ -410,18 +411,18 @@ footer {
 }
 
 .banner-bienvenida h2 {
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   font-size: 1.2rem;
   margin-bottom: 0.3rem;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
 }
 
 .banner-bienvenida p {
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 .redes-sociales {
@@ -433,7 +434,7 @@ footer {
 
 .icono-red i {
   font-size: 20px;
-  color: var(--blanco);
+  color: var(--texto-oscuro);
   padding: 0.3rem;
   transition: all 0.3s ease;
 }
@@ -441,7 +442,7 @@ footer {
 .icono-red i:hover {
   transform: scale(1.1);
   background-color: var(--rosa-claro);
-  color: #0c0b0b;
+  color: var(--texto-oscuro);
 }
 
 /* ==================== */
@@ -473,7 +474,7 @@ footer {
   top: 10px;
   right: 10px;
   background-color: var(--rosa-oscuro);
-  color: white;
+  color: var(--blanco);
   padding: 10px 16px;
   border-radius: 5px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
@@ -531,7 +532,7 @@ footer {
   left: 20px;
   z-index: 999;
   background-color: var(--rosa-oscuro);
-  color: white;
+  color: var(--blanco);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -779,21 +780,21 @@ footer {
 }
 
 .resaltado {
-  color: var(--rosa-oscuro); /* o un color más vibrante */
+  color: var(--rosa-oscuro);
   font-weight: bold;
 }
+
 /* Asegura que el contenedor esté bien posicionado */
 .lightbox .lb-data .lb-close {
   position: absolute !important;
   top: -40px !important;
   right: 0 !important;
   font-size: 32px !important;
-  color: white !important;
+  color: var(--blanco) !important;
   z-index: 1001 !important;
   background: transparent !important;
   text-shadow: 0 0 5px black;
 }
-
 
 /* ==================== */
 /* MODAL DE TONOS */
@@ -1011,7 +1012,7 @@ footer {
 }
 
 .pie-imagen {
-  color: #fff;
+  color: var(--blanco);
   padding: 15px 0;
   font-size: 1rem;
   text-align: center;
@@ -1127,4 +1128,151 @@ footer {
   #imagenVistaPrevia {
     max-height: 120px;
   }
+}
+
+/* ==================== */
+/* PRODUCTOS NO DISPONIBLES */
+/* ==================== */
+.producto.no-disponible {
+  position: relative;
+}
+
+.no-disponible-text {
+  color: var(--rosa-oscuro);
+  font-weight: bold;
+  font-size: 0.85rem;
+  background-color: rgba(255, 192, 203, 0.9);
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  margin: 0.3rem 0;
+  border: 1px solid var(--rosa-oscuro);
+  text-align: center;
+}
+
+.producto.no-disponible .agregar-carrito {
+  background-color: #d9d9d9;
+  color: #666666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.producto.no-disponible .agregar-carrito:hover {
+  background-color: #d9d9d9;
+  transform: none;
+  box-shadow: none;
+}
+
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.formulario-producto {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-group textarea {
+  height: 100px;
+}
+
+.tonos-group {
+  margin-bottom: 15px;
+}
+
+.tono-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tono-input input {
+  flex: 1;
+}
+
+.eliminar-tono {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tabla-productos {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #f1f1f1;
+}
+
+.editar, .eliminar {
+  padding: 5px 10px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editar {
+  background: #4CAF50;
+  color: white;
+}
+
+.eliminar {
+  background: #ff4d4d;
+  color: white;
+}
+
+.volver-tienda {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 20px;
+  background: #ff69b4;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.resultados-busqueda {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  color: #333;
+  display: none;
 }
