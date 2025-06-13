@@ -30,17 +30,19 @@ document.addEventListener('DOMContentLoaded', function() {
   let productoSeleccionado = null;
   let tonoSeleccionado = '';
 
-  // Función principal para cargar y renderizar productos
-  async function cargarProductos() {
-    try {
-      const snapshot = await getDocs(collection(db, "productos"));
-      todosProductos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderizarProductos();
-      configurarBuscador();
-    } catch (error) {
-      console.error("Error al cargar productos:", error);
-    }
+// Función principal para cargar y renderizar productos
+async function cargarProductos() {
+  try {
+    const snapshot = await getDocs(collection(db, "productos"));
+    // CAMBIO: Se invierte el orden para que los más nuevos aparezcan primeros
+    todosProductos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+    renderizarProductos();
+    configurarBuscador();
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
   }
+}
+
 
   // Función para renderizar productos con filtrado
   function renderizarProductos(filtro = "") {
