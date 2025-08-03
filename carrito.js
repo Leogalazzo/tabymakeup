@@ -1,3 +1,4 @@
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
 import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
@@ -8,66 +9,113 @@ const btnEliminarTodo = document.getElementById('btn-eliminar-todo');
 
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyD-P5-GOlwT-Ax51u3giJm1G-oXmfOf9-g",
   authDomain: "tabymakeup-of.firebaseapp.com",
   projectId: "tabymakeup-of",
-  storageBucket: "tabymakeup-of.firebasestorage.app",
+  storageBucket: "tabymakeup-of.appspot.com",
   messagingSenderId: "548834143470",
   appId: "1:548834143470:web:54812e64324b3629f617ff"
 };
 
-// Inicializar Firebase y Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Función para cargar productos desde Firestore
+// Imagen por defecto si no hay imagen disponible
+const imagenPlaceholder = 'https://plabi.justicia.es/o/subastas-theme/images/image-not-available.png';
+
 async function cargarProductos() {
-  const snapshot = await getDocs(collection(db, "productos"));
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  try {
+    const snapshot = await getDocs(collection(db, "productos"));
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error al cargar productos desde Firestore:", error);
+    return [];
+  }
 }
 
-// Verificar y actualizar el carrito con los datos actuales de Firestore
 async function actualizarCarrito() {
-  const productosFirestore = await cargarProductos();
+  let productosFirestore = [];
+  try {
+    productosFirestore = await cargarProductos();
+  } catch (error) {
+    console.error("Firestore no disponible, usando datos de localStorage:", error);
+  }
+
   const productosActualizados = [];
+  let hayProductosNoDisponibles = false;
   let mensajesCambio = [];
+  let mensajesPrecio = [];
 
   for (const item of carrito) {
     const productoFirestore = productosFirestore.find(p => p.id === item.id);
     if (productoFirestore) {
-      if (productoFirestore.disponible) {
-        // Verificar cambios en precio
-        if (parseFloat(item.precio) !== parseFloat(productoFirestore.precio)) {
-          mensajesCambio.push(`${item.nombre} cambió de $${item.precio} a $${productoFirestore.precio}`);
+      let disponible = productoFirestore.disponible;
+      let mensajeNoDisponible = '';
+
+      if (item.tono && productoFirestore.tonos) {
+        const tonoEncontrado = productoFirestore.tonos.find(t => t.nombre === item.tono);
+        if (!tonoEncontrado || !tonoEncontrado.disponible) {
+          disponible = false;
+          mensajeNoDisponible = ` (Tono no disponible)`;
+          mensajesCambio.push(`${item.nombre}${mensajeNoDisponible}`);
         }
-        // Actualizar datos, preservando el tono
+      }
+
+      if (!disponible) {
+        hayProductosNoDisponibles = true;
         productosActualizados.push({
           ...item,
-          precio: productoFirestore.precio,
-          nombre: productoFirestore.nombre + (item.tono ? ` - ${item.tono}` : ''),
-          imagen: productoFirestore.imagen || 'placeholder.jpg'
+          precio: productoFirestore.precio || item.precio,
+          nombre: item.nombre,
+          imagen: item.imagen || productoFirestore.imagen || imagenPlaceholder,
+          disponible: false
         });
-      } else {
-        mensajesCambio.push(`${item.nombre} ya no está disponible`);
+        continue;
       }
+
+      const nuevoPrecio = parseFloat(productoFirestore.precio);
+      const precioAnterior = parseFloat(item.precio);
+      const nombreActualizado = productoFirestore.nombre + (item.tono ? ` - ${item.tono}` : '');
+
+      if (nuevoPrecio !== precioAnterior) {
+        const mensaje = `${nombreActualizado} cambió de $${precioAnterior.toFixed(2)} a $${nuevoPrecio.toFixed(2)}`;
+        mensajesCambio.push(mensaje);
+        mensajesPrecio.push(mensaje);
+      }
+
+      productosActualizados.push({
+        ...item,
+        precio: nuevoPrecio,
+        nombre: item.nombre,
+        imagen: item.imagen || productoFirestore.imagen || imagenPlaceholder,
+        disponible: true
+      });
+
     } else {
-      mensajesCambio.push(`${item.nombre} ya no existe`);
+      // Producto eliminado de Firestore
+      productosActualizados.push({
+        ...item,
+        disponible: false,
+        imagen: item.imagen || imagenPlaceholder,
+        nombre: item.nombre
+      });
+      hayProductosNoDisponibles = true;
+      mensajesCambio.push(`${item.nombre} ya no está disponible (eliminado del catálogo)`);
     }
   }
 
-  // Actualizar el carrito solo si hay cambios
-  if (JSON.stringify(carrito) !== JSON.stringify(productosActualizados)) {
-    carrito = productosActualizados;
-    localStorage.setItem('carrito', JSON.stringify(carrito));
+  carrito = productosActualizados;
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+
+  if (mensajesCambio.length > 0) {
+    console.log("Cambios en el carrito:\n" + mensajesCambio.join('\n'));
   }
 
-  // Mostrar notificaciones solo si hay cambios
-  if (mensajesCambio.length > 0) {
+  if (mensajesPrecio.length > 0) {
     Swal.fire({
-      title: 'Cambios en el carrito',
-      html: mensajesCambio.join('<br>'),
+      title: 'Precios actualizados',
+      html: mensajesPrecio.join('<br>'),
       icon: 'info',
       confirmButtonText: 'Aceptar'
     });
@@ -76,107 +124,93 @@ async function actualizarCarrito() {
   renderizarCarrito();
 }
 
+
 function renderizarCarrito() {
   listaCarrito.innerHTML = '';
   let total = 0;
+  let hayProductosNoDisponibles = false;
 
   if (carrito.length === 0) {
-    // No mostrar nada cuando el carrito está vacío
-    listaCarrito.innerHTML = '';
+    listaCarrito.innerHTML = '<p class="carrito-vacio">Tu carrito está vacío</p>';
     totalElemento.textContent = '0';
+    if (btnWhatsApp) btnWhatsApp.disabled = true;
     actualizarWhatsApp();
     return;
   }
 
   carrito.forEach((producto, index) => {
     const li = document.createElement('li');
+    li.className = producto.disponible ? '' : 'no-disponible';
+
     li.innerHTML = `
-      <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen">
-      <span class="nombre-producto">${producto.nombre}</span>
-      <span class="precio-producto">$${producto.precio}</span>
+      <img src="${producto.imagen || imagenPlaceholder}" alt="${producto.nombre}" class="producto-imagen">
+      <div class="producto-info">
+        <span class="nombre-producto">${producto.nombre}</span>
+        <span class="precio-producto">$${producto.precio}</span>
+      </div>
       <div class="cantidad-controles">
         <button class="btn-restar" data-index="${index}">-</button>
         <span class="cantidad">${producto.cantidad}</span>
-        <button class="btn-sumar" data-index="${index}">+</button>
+        <button class="btn-sumar" data-index="${index}" ${!producto.disponible ? 'disabled' : ''}>+</button>
       </div>
       <button class="btn-eliminar" data-index="${index}">
         <i class="fas fa-trash-alt"></i>
       </button>
+      ${!producto.disponible ? '<span class="no-disponible-badge">No disponible</span>' : ''}
     `;
+
     listaCarrito.appendChild(li);
-    total += producto.precio * producto.cantidad;
+
+    if (producto.disponible) {
+      total += producto.precio * producto.cantidad;
+    } else {
+      hayProductosNoDisponibles = true;
+    }
   });
 
   totalElemento.textContent = total.toFixed(2);
+
+  if (hayProductosNoDisponibles) {
+    const advertencia = document.createElement('div');
+    advertencia.className = 'advertencia-no-disponible';
+    advertencia.innerHTML = `
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Tienes productos no disponibles en tu carrito. Elimínalos para continuar.</span>
+    `;
+    listaCarrito.insertBefore(advertencia, listaCarrito.firstChild);
+  }
+
+  if (btnWhatsApp) {
+    btnWhatsApp.disabled = hayProductosNoDisponibles || carrito.length === 0;
+  }
+
   actualizarWhatsApp();
 }
 
 function eliminarProducto(index) {
-  const producto = carrito[index];
-
-  Swal.fire({
-    title: '¿Eliminar producto?',
-    html: `¿Estás seguro que deseas eliminar <strong>${producto.nombre}</strong> del carrito?`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      carrito.splice(index, 1);
-      localStorage.setItem('carrito', JSON.stringify(carrito));
-      renderizarCarrito();
-
-      Swal.fire(
-        'Eliminado',
-        'El producto fue eliminado del carrito',
-        'success'
-      );
-    }
-  });
+  carrito.splice(index, 1);
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+  renderizarCarrito();
 }
 
-// Botón eliminar todo
 if (btnEliminarTodo) {
   btnEliminarTodo.addEventListener('click', () => {
     if (carrito.length === 0) return;
-
-    Swal.fire({
-      title: '¿Vaciar carrito?',
-      text: 'Esta acción eliminará todos los productos del carrito.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, vaciar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        carrito = [];
-        localStorage.removeItem('carrito');
-        renderizarCarrito();
-
-        Swal.fire(
-          'Carrito vacío',
-          'Todos los productos fueron eliminados',
-          'success'
-        );
-      }
-    });
+    carrito = [];
+    localStorage.removeItem('carrito');
+    renderizarCarrito();
   });
 }
 
 function actualizarWhatsApp() {
-  if (carrito.length === 0) {
+  if (!btnWhatsApp) return;
+
+  if (carrito.length === 0 || carrito.some(p => !p.disponible)) {
     btnWhatsApp.disabled = true;
-    btnWhatsApp.onclick = null;
     return;
   }
 
-  let mensaje = "¡Hola! \n\nQuiero comprar los siguientes productos:\n\n";
-
+  let mensaje = "¡Hola! \n\nTe envío mi compra:\n\n";
   carrito.forEach(producto => {
     mensaje += `• ${producto.nombre}\n`;
     mensaje += `  Cantidad: ${producto.cantidad}\n`;
@@ -184,11 +218,10 @@ function actualizarWhatsApp() {
     mensaje += `  Subtotal: $${producto.precio * producto.cantidad}\n\n`;
   });
 
-  let total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
-  mensaje += `*Total del pedido:* $${total.toFixed(2)}\n\n`;
-  mensaje += "¡Gracias! ";
+  const total = carrito.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
+  mensaje += `*Total del pedido:* $${total.toFixed(2)}\n\n¡Gracias!`;
 
-  const telefono = "543735401893";
+  const telefono = "5493735401893";
   const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
 
   btnWhatsApp.disabled = false;
@@ -217,8 +250,13 @@ function actualizarWhatsApp() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Verificar y actualizar el carrito al cargar la página
-  await actualizarCarrito();
+  try {
+    await actualizarCarrito();
+  } catch (error) {
+    console.error("Error en la inicialización:", error);
+    renderizarCarrito();
+    actualizarWhatsApp();
+  }
 
   listaCarrito.addEventListener('click', (e) => {
     const index = parseInt(e.target.dataset.index);
