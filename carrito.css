@@ -618,3 +618,169 @@ footer {
     font-size: 0.8rem;
   }
 }
+
+/* ==================== */
+/* ESTILOS PARA CARRITO - PRODUCTOS NO DISPONIBLES */
+/* ==================== */
+
+#lista-carrito {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+#lista-carrito li {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+  background-color: rgba(255, 192, 203, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(216, 90, 127, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+#lista-carrito li.no-disponible {
+  background-color: rgba(221, 221, 221, 0.3);
+  border-color: rgba(153, 153, 153, 0.3);
+  opacity: 0.8;
+}
+
+.no-disponible-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: var(--rosa-oscuro);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.producto-imagen {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 1rem;
+}
+
+.producto-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nombre-producto {
+  display: block;
+  font-weight: 500;
+  color: var(--negro);
+  margin-bottom: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.precio-producto {
+  font-weight: bold;
+  color: var(--rosa-oscuro);
+  font-size: 0.9rem;
+}
+
+.cantidad-controles {
+  display: flex;
+  align-items: center;
+  margin: 0 1rem;
+}
+
+.cantidad-controles button {
+  background-color: var(--rosa-claro);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cantidad-controles button:hover {
+  background-color: var(--rosa-principal);
+  color: white;
+}
+
+.cantidad-controles button[disabled] {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.cantidad-controles button[disabled]:hover {
+  background-color: #ddd;
+}
+
+.cantidad-controles span {
+  margin: 0 0.5rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+.btn-eliminar {
+  background: none;
+  border: none;
+  color: var(--rosa-oscuro);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+}
+
+.btn-eliminar:hover {
+  color: #d33;
+  transform: scale(1.1);
+}
+
+.advertencia-no-disponible {
+  background-color: rgba(255, 213, 0, 0.2);
+  border-left: 4px solid var(--dorado);
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--negro);
+}
+
+.advertencia-no-disponible i {
+  color: var(--dorado);
+  font-size: 1.2rem;
+}
+
+.carrito-vacio {
+  text-align: center;
+  padding: 2rem;
+  color: var(--rosa-oscuro);
+  font-style: italic;
+}
+
+/* ==================== */
+/* BOTÓN WHATSAPP DESHABILITADO */
+/* ==================== */
+#btn-whatsapp[disabled] {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ddd;
+  opacity: 0.7;
+}
+
+#btn-whatsapp[disabled]:hover {
+  background-color: #ddd;
+  transform: none;
+  box-shadow: none;
+
+}
