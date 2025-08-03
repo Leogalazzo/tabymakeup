@@ -1,3 +1,4 @@
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
 import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
@@ -30,19 +31,17 @@ document.addEventListener('DOMContentLoaded', function() {
   let productoSeleccionado = null;
   let tonoSeleccionado = '';
 
-// Función principal para cargar y renderizar productos
-async function cargarProductos() {
-  try {
-    const snapshot = await getDocs(collection(db, "productos"));
-    // CAMBIO: Se invierte el orden para que los más nuevos aparezcan primeros
-    todosProductos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
-    renderizarProductos();
-    configurarBuscador();
-  } catch (error) {
-    console.error("Error al cargar productos:", error);
+  // Función principal para cargar y renderizar productos
+  async function cargarProductos() {
+    try {
+      const snapshot = await getDocs(collection(db, "productos"));
+      todosProductos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+      renderizarProductos();
+      configurarBuscador();
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
   }
-}
-
 
   // Función para renderizar productos con filtrado
   function renderizarProductos(filtro = "") {
@@ -73,10 +72,10 @@ async function cargarProductos() {
     if (filtro) {
       resultadosTitulo.textContent = `Resultados de la búsqueda: "${filtro}"`;
       resultadosTitulo.style.display = "block";
-      if (tituloTodos) tituloTodos.style.display = "none"; // Ocultar "Todos los productos"
+      if (tituloTodos) tituloTodos.style.display = "none";
     } else {
       resultadosTitulo.style.display = "none";
-      if (tituloTodos) tituloTodos.style.display = "block"; // Mostrar "Todos los productos"
+      if (tituloTodos) tituloTodos.style.display = "block";
     }
 
     // Filtrar productos si hay término de búsqueda
@@ -88,26 +87,44 @@ async function cargarProductos() {
       );
     }
 
-    // Renderizar productos o mensaje de no resultados
-    if (productosFiltrados.length === 0 && filtro) {
-      contenedorTodos.innerHTML = `<p class="sin-resultados">No se encontraron productos para "${filtro}"</p>`;
-    } else {
-      productosFiltrados.forEach(producto => {
-        const productoHTML = crearHTMLProducto(producto);
-
-        // Agregar a la sección "Todos"
-        contenedorTodos.innerHTML += productoHTML;
-
-        // Agregar a la sección de categoría correspondiente solo si no hay filtro
-        if (!filtro) {
-          const seccion = document.getElementById(producto.categoria);
-          if (seccion) {
-            const contenedor = seccion.querySelector(".productos-container");
-            if (contenedor) contenedor.innerHTML += productoHTML;
-          }
-        }
-      });
+   // Renderizar productos o mensaje de no resultados
+if (productosFiltrados.length === 0 && filtro) {
+  contenedorTodos.innerHTML = `<p class="sin-resultados">No se encontraron productos para "${filtro}"</p>`;
+} else {
+  productosFiltrados.forEach(producto => {
+    const productoHTML = crearHTMLProducto(producto);
+    contenedorTodos.innerHTML += productoHTML;
+    if (!filtro) {
+      const seccion = document.getElementById(producto.categoria);
+      if (seccion) {
+        const contenedor = seccion.querySelector(".productos-container");
+        if (contenedor) contenedor.innerHTML += productoHTML;
+      }
     }
+  });
+
+  // Mostrar u ocultar mensaje en la sección de ofertas
+  const seccionOfertas = document.getElementById('ofertas');
+  if (seccionOfertas) {
+    let mensajeSinOfertas = seccionOfertas.querySelector('.mensaje-sin-ofertas');
+
+    // Crear el mensaje si no existe
+    if (!mensajeSinOfertas) {
+      mensajeSinOfertas = document.createElement('p');
+      mensajeSinOfertas.className = 'mensaje-sin-ofertas';
+      mensajeSinOfertas.textContent = 'No hay ofertas disponibles en este momento.';
+      mensajeSinOfertas.style.display = 'none';
+      seccionOfertas.insertBefore(mensajeSinOfertas, seccionOfertas.querySelector('.productos-container'));
+    }
+
+    const contenedorOfertas = seccionOfertas.querySelector('.productos-container');
+    if (contenedorOfertas && contenedorOfertas.children.length === 0) {
+      mensajeSinOfertas.style.display = 'block';
+    } else {
+      mensajeSinOfertas.style.display = 'none';
+    }
+  }
+}
 
     // Ocultar secciones vacías o no relevantes
     secciones.forEach(seccion => {
@@ -122,6 +139,8 @@ async function cargarProductos() {
     configurarBotonesAgregar();
     lightbox.init();
   }
+
+
 
   // Función para crear el HTML de un producto
   function crearHTMLProducto(producto) {
@@ -192,7 +211,6 @@ async function cargarProductos() {
           nombre: this.getAttribute('data-nombre'),
           precio: this.getAttribute('data-precio')
         };
-        console.log('Producto seleccionado:', productoSeleccionado); // Debugging
 
         const tonos = this.getAttribute('data-tonos').split(',');
         const imagenesTonos = this.getAttribute('data-imagenes-tonos').split(',');
@@ -201,33 +219,52 @@ async function cargarProductos() {
         if (vistaPreviaContainer) vistaPreviaContainer.style.display = 'none';
         if (imagenVistaPrevia) imagenVistaPrevia.style.display = 'none';
 
+        const producto = todosProductos.find(p => p.id === productoSeleccionado.id);
         tonos.forEach((tono, index) => {
-          const botonTono = document.createElement('button');
-          botonTono.className = 'tono';
-          botonTono.setAttribute('data-tono', tono.trim());
+          const tonoData = producto.tonos[index];
+          const divTono = document.createElement('div');
+          divTono.className = 'tono-item';
+          
+          const nombreTono = document.createElement('span');
+          nombreTono.className = 'nombre-tono';
+          nombreTono.textContent = tono.trim();
+          if (!tonoData.disponible) {
+            nombreTono.classList.add('no-disponible');
+          }
+          divTono.appendChild(nombreTono);
 
-          if (imagenesTonos[index] && imagenesTonos[index].trim() !== '') {
-            botonTono.setAttribute('data-imagen', imagenesTonos[index].trim());
+          if (!tonoData.disponible) {
+            const spanNoDisponible = document.createElement('span');
+            spanNoDisponible.className = 'no-disponible-text';
+            spanNoDisponible.textContent = 'Sin stock';
+            divTono.appendChild(spanNoDisponible);
+          } else {
+            const botonTono = document.createElement('button');
+            botonTono.className = 'tono';
+            botonTono.setAttribute('data-tono', tono.trim());
+            if (imagenesTonos[index] && imagenesTonos[index].trim() !== '') {
+              botonTono.setAttribute('data-imagen', imagenesTonos[index].trim());
+            }
+            botonTono.textContent = 'Seleccionar';
+            
+            botonTono.addEventListener('click', function() {
+              document.querySelectorAll('.tono').forEach(t => t.classList.remove('seleccionado'));
+              this.classList.add('seleccionado');
+              tonoSeleccionado = this.getAttribute('data-tono');
+
+              const imagen = this.getAttribute('data-imagen');
+              if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
+                imagenVistaPrevia.src = imagen;
+                imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
+                imagenVistaPrevia.style.display = 'block';
+                vistaPreviaContainer.style.display = 'flex';
+              }
+            });
+
+            divTono.appendChild(botonTono);
           }
 
-          botonTono.textContent = tono.trim();
-
-          botonTono.addEventListener('click', function() {
-            document.querySelectorAll('.tono').forEach(t => t.classList.remove('seleccionado'));
-            this.classList.add('seleccionado');
-            tonoSeleccionado = this.getAttribute('data-tono');
-            console.log('Tono seleccionado:', tonoSeleccionado); // Debugging
-
-            const imagen = this.getAttribute('data-imagen');
-            if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
-              imagenVistaPrevia.src = imagen;
-              imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
-              imagenVistaPrevia.style.display = 'block';
-              vistaPreviaContainer.style.display = 'flex';
-            }
-          });
-
-          tonosContainer.appendChild(botonTono);
+          tonosContainer.appendChild(divTono);
         });
 
         modal.style.display = 'block';
@@ -238,7 +275,6 @@ async function cargarProductos() {
     // Configurar botón de agregar en el modal
     nuevoBotonAgregar.addEventListener('click', function() {
       if (tonoSeleccionado && productoSeleccionado) {
-        console.log('Agregando al carrito:', productoSeleccionado, 'Tono:', tonoSeleccionado); // Debugging
         agregarAlCarrito(
           productoSeleccionado.id,
           productoSeleccionado.nombre,
@@ -295,7 +331,6 @@ async function cargarProductos() {
     }
 
     localStorage.setItem('carrito', JSON.stringify(carrito));
-    console.log('Carrito después de agregar:', carrito); // Debugging
     actualizarCarrito();
     mostrarNotificacion(`¡${nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''} agregado al carrito!`);
   }
@@ -322,7 +357,6 @@ async function cargarProductos() {
       listaCarrito.innerHTML = '';
 
       if (carrito.length === 0) {
-        // No mostrar nada
         listaCarrito.innerHTML = '';
         if (totalElement) totalElement.textContent = '0';
       } else {
