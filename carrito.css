@@ -1,3 +1,4 @@
+
 /* ==================== */
 /* VARIABLES Y ESTILOS BASE */
 /* ==================== */
@@ -782,5 +783,166 @@ footer {
   background-color: #ddd;
   transform: none;
   box-shadow: none;
+}
 
+/* ==================== */
+/* SWEETALERT PERSONALIZADO - VERSIÓN MEJORADA */
+/* ==================== */
+.swal-container {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.swal-popup {
+  border-radius: 15px !important;
+  border: 2px solid #ff9bb3 !important;
+  box-shadow: 0 4px 20px rgba(216, 90, 127, 0.3) !important;
+  max-width: 90% !important;
+  width: auto !important;
+  padding: 1.5rem !important;
+  background: #fff5f7 !important;
+}
+
+.swal-title {
+  color: #d85a7f !important;
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+  text-align: center !important;
+}
+
+.swal-content {
+  font-size: 1rem !important;
+  color: #333 !important;
+  line-height: 1.5 !important;
+  text-align: center !important;
+  padding: 0 0.5rem !important;
+}
+
+.swal-actions {
+  margin-top: 1.5rem !important;
+  justify-content: center !important;
+  gap: 15px !important; /* Aumentado el espacio entre botones */
+  width: 100% !important;
+}
+
+.swal-confirm, .swal-cancel {
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 0.8rem 1.8rem !important; /* Botones más grandes */
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  flex-grow: 1 !important; /* Ocupan espacio disponible */
+  max-width: 200px !important; /* Ancho máximo para no estirarse demasiado */
+}
+
+.swal-confirm {
+  background-color: #d85a7f !important;
+  color: white !important;
+  order: 2 !important; /* Confirmar a la derecha */
+}
+
+.swal-confirm:hover {
+  background-color: #c0496b !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(216, 90, 127, 0.4) !important;
+}
+
+.swal-cancel {
+  background-color: #f8f8f8 !important;
+  color: #666 !important;
+  order: 1 !important; /* Cancelar a la izquierda */
+  border: 1px solid #e1e1e1 !important;
+}
+
+.swal-cancel:hover {
+  background-color: #e1e1e1 !important;
+  transform: translateY(-2px) !important;
+}
+
+.swal-icon {
+  margin: 1rem auto 0.5rem !important;
+}
+
+/* Animaciones personalizadas */
+@keyframes swal-show {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes swal-hide {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+/* ==================== */
+/* RESPONSIVE PARA MÓVILES - BOTONES MEJOR ESPACIADOS */
+/* ==================== */
+@media (max-width: 576px) {
+  .swal-popup {
+    width: 90% !important;
+    padding: 1.2rem !important;
+  }
+  
+  .swal-title {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .swal-content {
+    font-size: 0.95rem !important;
+    padding: 0 !important;
+  }
+  
+  .swal-actions {
+    flex-direction: row !important;
+    gap: 12px !important; /* Más espacio entre botones */
+    margin-top: 1.8rem !important;
+  }
+  
+  .swal-confirm, .swal-cancel {
+    padding: 0.8rem !important;
+    font-size: 0.9rem !important;
+    max-width: none !important;
+    width: calc(50% - 6px) !important; /* Mitad del espacio menos el gap */
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 400px) {
+  .swal-actions {
+    gap: 10px !important;
+    flex-wrap: wrap;
+  }
+  
+  .swal-confirm, .swal-cancel {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .swal-confirm {
+    order: 1 !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  .swal-cancel {
+    order: 2 !important;
+  }
+}
+
+/* Estilo especial para el loader de WhatsApp */
+.swal-whatsapp-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.swal-whatsapp-loader p {
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #333;
 }
