@@ -254,6 +254,7 @@ main {
   transform: scale(1.03);
 }
 
+
 /* ==================== */
 /* BADGE NUEVO */
 /* ==================== */
@@ -273,13 +274,13 @@ main {
   font-weight: bold;
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+  /* box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4); */
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  animation: pulse 2s ease-in-out infinite;
+  /* animation: pulse 2s ease-in-out infinite; */
   z-index: 10;
   border: 2px solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
+  /* backdrop-filter: blur(5px); */
   /* Mejoras de accesibilidad */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   font-family: 'Montserrat', sans-serif;
@@ -288,86 +289,6 @@ main {
   min-width: fit-content;
 }
 
-.badge-nuevo::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, var(--dorado) 0%, #ffed4e 50%, var(--dorado) 100%);
-  border-radius: 14px;
-  z-index: -1;
-  opacity: 0.7;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.badge-nuevo:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
-  animation: none;
-}
-
-.badge-nuevo:focus {
-  outline: 2px solid var(--rosa-principal);
-  outline-offset: 2px;
-}
-
-/* Estilos para productos con badge en diferentes estados */
-.producto:hover .badge-nuevo {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.7);
-}
-
-/* Animación de entrada para el badge */
-@keyframes badgeEntrada {
-  0% {
-    opacity: 0;
-    transform: scale(0.5) rotate(-10deg);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1) rotate(5deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-.badge-nuevo {
-  animation: badgeEntrada 0.6s ease-out, pulse 2s ease-in-out 0.6s infinite;
-}
-
-/* Mejoras para productos destacados */
-.producto:has(.badge-nuevo) {
-  position: relative;
-}
-
-.producto:has(.badge-nuevo)::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 237, 78, 0.1) 50%, rgba(255, 215, 0, 0.1) 100%);
-  border-radius: 10px;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.producto:has(.badge-nuevo):hover::before {
-  opacity: 1;
-}
-
-.precio {
-  font-weight: bold;
-  color: var(--rosa-oscuro);
-  font-size: 0.95rem;
-  margin: 0.3rem 0;
-}
 
 /* ==================== */
 /* BOTONES - AJUSTES MÓVILES */
@@ -2364,3 +2285,4 @@ ofertas {
   text-align: center;
   margin: 1rem 0;
 }
+
