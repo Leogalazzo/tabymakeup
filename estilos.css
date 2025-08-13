@@ -288,7 +288,12 @@ main {
   white-space: nowrap;
   min-width: fit-content;
 }
-
+.precio {
+  font-weight: bold;
+  color: var(--rosa-oscuro);
+  font-size: 0.95rem;
+  margin: 0.3rem 0;
+}
 
 /* ==================== */
 /* BOTONES - AJUSTES MÓVILES */
@@ -2285,4 +2290,5 @@ ofertas {
   text-align: center;
   margin: 1rem 0;
 }
+
 
