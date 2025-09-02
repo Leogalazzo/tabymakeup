@@ -117,20 +117,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Función principal para cargar y renderizar productos
+  // Función principal para cargar y renderizar productos (optimizada)
   async function cargarProductos() {
     try {
+      // Mostrar indicador de carga
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      if (loadingIndicator) {
+        loadingIndicator.style.display = "block";
+      }
+      
       const snapshot = await getDocs(collection(db, "productos"));
       todosProductos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       // Ordenar productos: nuevos primero, sin stock al final
       todosProductos = ordenarProductos(todosProductos);
       
+      // Limpiar cache cuando se cargan nuevos productos
+      cacheProductos.clear();
+      
+      // Renderizar productos
       renderizarProductos();
-      configurarBuscador();
-      configurarFiltros();
+      
+      // Configurar buscador y filtros solo una vez
+      if (!window.buscadorConfigurado) {
+        configurarBuscador();
+        configurarFiltros();
+        window.buscadorConfigurado = true;
+      }
+      
     } catch (error) {
       console.error("Error al cargar productos:", error);
+      // Mostrar mensaje de error al usuario
+      const contenedorTodos = document.getElementById("contenedor-todos");
+      if (contenedorTodos) {
+        contenedorTodos.innerHTML = `
+          <div class="error-carga">
+            <p>Error al cargar los productos. Por favor, recarga la página.</p>
+          </div>
+        `;
+      }
     }
   }
 
@@ -204,22 +229,37 @@ document.addEventListener('DOMContentLoaded', function() {
       sectionTodos.insertBefore(resultadosTitulo, contenedorTodos);
     }
 
-    // Filtrar productos primero
+    // Filtrar productos de manera más eficiente
     let productosFiltrados = todosProductos;
-    if (filtro) {
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
-        (producto.categoria && producto.categoria.toLowerCase().includes(filtro.toLowerCase())) ||
-        (producto.descripcion && producto.descripcion.toLowerCase().includes(filtro.toLowerCase()))
-      );
-    }
-    if (categoria !== "all") {
-      productosFiltrados = productosFiltrados.filter(producto => producto.categoria === categoria);
-    }
-    if (disponible === "available") {
-      productosFiltrados = productosFiltrados.filter(producto => producto.disponible);
-    } else if (disponible === "unavailable") {
-      productosFiltrados = productosFiltrados.filter(producto => !producto.disponible);
+    
+    // Aplicar todos los filtros en una sola pasada
+    if (filtro || categoria !== "all" || disponible !== "all") {
+      const filtroLower = filtro ? filtro.toLowerCase() : '';
+      productosFiltrados = productosFiltrados.filter(producto => {
+        // Filtro de texto
+        if (filtro && !(
+          producto.nombre.toLowerCase().includes(filtroLower) ||
+          (producto.categoria && producto.categoria.toLowerCase().includes(filtroLower)) ||
+          (producto.descripcion && producto.descripcion.toLowerCase().includes(filtroLower))
+        )) {
+          return false;
+        }
+        
+        // Filtro de categoría
+        if (categoria !== "all" && producto.categoria !== categoria) {
+          return false;
+        }
+        
+        // Filtro de disponibilidad
+        if (disponible === "available" && !producto.disponible) {
+          return false;
+        }
+        if (disponible === "unavailable" && producto.disponible) {
+          return false;
+        }
+        
+        return true;
+      });
     }
 
     // Mostrar u ocultar el título de resultados según el filtro
@@ -295,14 +335,117 @@ document.addEventListener('DOMContentLoaded', function() {
       // Remover clase de sin resultados si existe
       contenedorTodos.classList.remove('sin-resultados');
       
+      // Optimización: usar DocumentFragment para renderizado en lote
+      const fragmentTodos = document.createDocumentFragment();
+      const fragmentosSecciones = {};
+      
       productosFiltrados.forEach(producto => {
         const productoHTML = crearHTMLProducto(producto);
-        contenedorTodos.innerHTML += productoHTML;
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = productoHTML;
+        const productoElement = tempDiv.firstElementChild;
+        
+        fragmentTodos.appendChild(productoElement);
+        
         if (!filtro && categoria === "all" && disponible === "all") {
           const seccion = document.getElementById(producto.categoria);
           if (seccion) {
             const contenedor = seccion.querySelector(".productos-container");
-            if (contenedor) contenedor.innerHTML += productoHTML;
+            if (contenedor) {
+              if (!fragmentosSecciones[producto.categoria]) {
+                fragmentosSecciones[producto.categoria] = document.createDocumentFragment();
+              }
+              // Clonar el elemento para evitar duplicados
+              fragmentosSecciones[producto.categoria].appendChild(productoElement.cloneNode(true));
+            }
+          }
+        }
+      });
+      
+      // Limpiar contenedor "todos" y controles existentes
+      contenedorTodos.innerHTML = "";
+      const seccionTodos = document.getElementById("todos");
+      if (seccionTodos) {
+        const controlesExistentesTodos = seccionTodos.querySelector('.controles-ver-mas');
+        if (controlesExistentesTodos) {
+          controlesExistentesTodos.remove();
+        }
+      }
+      
+      // Mostrar solo los primeros 7 productos en "todos"
+      const productosVisiblesTodos = productosFiltrados.slice(0, 7);
+      const fragmentoTodos = document.createDocumentFragment();
+      
+      productosVisiblesTodos.forEach(producto => {
+        const productoHTML = crearHTMLProducto(producto);
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = productoHTML;
+        fragmentoTodos.appendChild(tempDiv.firstElementChild);
+      });
+      
+      contenedorTodos.appendChild(fragmentoTodos);
+      
+      // Agregar controles "Ver más" para la sección "todos" si hay más de 7 productos
+      if (productosFiltrados.length > 7 && seccionTodos) {
+        const contenedorControlesTodos = document.createElement('div');
+        contenedorControlesTodos.className = 'controles-ver-mas';
+        contenedorControlesTodos.innerHTML = `
+          <div class="contador-productos">
+            Mostrando ${productosVisiblesTodos.length} de ${productosFiltrados.length} productos
+          </div>
+          <button class="btn-ver-mas" data-categoria="todos" data-mostrando="7">
+            Ver más productos
+          </button>
+        `;
+        seccionTodos.appendChild(contenedorControlesTodos);
+      }
+      
+      // Aplicar fragmentos a las secciones con sistema de "Ver más"
+      Object.keys(fragmentosSecciones).forEach(categoria => {
+        const seccion = document.getElementById(categoria);
+        if (seccion) {
+          const contenedor = seccion.querySelector(".productos-container");
+          if (contenedor) {
+            // Limpiar contenedor y controles existentes
+            contenedor.innerHTML = "";
+            const controlesExistentes = seccion.querySelector('.controles-ver-mas');
+            if (controlesExistentes) {
+              controlesExistentes.remove();
+            }
+            
+            // Obtener todos los productos de esta categoría
+            const productosCategoria = productosFiltrados.filter(p => p.categoria === categoria);
+            const totalProductos = productosCategoria.length;
+            
+            if (totalProductos > 0) {
+              // Mostrar solo los primeros 7 productos
+              const productosVisibles = productosCategoria.slice(0, 7);
+              const fragmentoVisible = document.createDocumentFragment();
+              
+              productosVisibles.forEach(producto => {
+                const productoHTML = crearHTMLProducto(producto);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = productoHTML;
+                fragmentoVisible.appendChild(tempDiv.firstElementChild);
+              });
+              
+              contenedor.appendChild(fragmentoVisible);
+              
+              // Agregar contador y botón "Ver más" si hay más de 7 productos
+              if (totalProductos > 7) {
+                const contenedorControles = document.createElement('div');
+                contenedorControles.className = 'controles-ver-mas';
+                contenedorControles.innerHTML = `
+                  <div class="contador-productos">
+                    Mostrando ${productosVisibles.length} de ${totalProductos} productos
+                  </div>
+                  <button class="btn-ver-mas" data-categoria="${categoria}" data-mostrando="7">
+                    Ver más productos
+                  </button>
+                `;
+                seccion.appendChild(contenedorControles);
+              }
+            }
           }
         }
       });
@@ -336,42 +479,74 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    // Configurar eventos
-    setupProductosConTonos();
-    configurarBotonesAgregar();
-    lightbox.init();
+    // Configurar eventos solo si es necesario
+    if (!window.eventosConfigurados) {
+      setupProductosConTonos();
+      configurarBotonesAgregar();
+      configurarBotonesVerMas();
+      lightbox.init();
+      window.eventosConfigurados = true;
+    }
 
     if (loadingIndicator) loadingIndicator.style.display = "none";
   }
 
 
 
-  // Función para crear el HTML de un producto
+  // Cache para evitar cálculos repetitivos
+  const cacheProductos = new Map();
+  
+  // Función para crear el HTML de un producto (optimizada)
   function crearHTMLProducto(producto) {
-  const esNuevoPorFecha = producto.fechaSubida 
-    ? (Date.now() - new Date(producto.fechaSubida).getTime()) / (1000 * 60 * 60 * 24) <= 15
-    : false;
-  const esNuevo = producto.esNuevo || esNuevoPorFecha;
-    return `
-      <div class="producto ${!producto.disponible ? 'no-disponible' : ''}">
+    // Verificar cache primero
+    if (cacheProductos.has(producto.id)) {
+      return cacheProductos.get(producto.id);
+    }
+    
+    const esNuevoPorFecha = producto.fechaSubida 
+      ? (Date.now() - new Date(producto.fechaSubida).getTime()) / (1000 * 60 * 60 * 24) <= 15
+      : false;
+    const esNuevo = producto.esNuevo || esNuevoPorFecha;
+    
+    // Pre-calcular strings para evitar concatenaciones repetitivas
+    const claseProducto = !producto.disponible ? 'no-disponible' : '';
+    const claseBoton = producto.tonos && producto.tonos.length > 0 ? 'con-tonos' : '';
+    const imagenSrc = producto.imagen || 'placeholder.jpg';
+    const imagenHref = producto.imagen || '';
+    const disabledAttr = !producto.disponible ? 'disabled' : '';
+    
+    // Pre-calcular datos de tonos si existen
+    let tonosData = '';
+    if (producto.tonos && producto.tonos.length > 0) {
+      const tonosNombres = producto.tonos.map(t => t.nombre).join(',');
+      const tonosImagenes = producto.tonos.map(t => t.imagen).join(',');
+      tonosData = `data-tonos="${tonosNombres}" data-imagenes-tonos="${tonosImagenes}"`;
+    }
+    
+    const html = `
+      <div class="producto ${claseProducto}">
         <div class="producto-imagen-container">
-          <a href="${producto.imagen || ''}" data-lightbox="galeria">
-            <img src="${producto.imagen || 'placeholder.jpg'}" alt="${producto.nombre}" class="imagen-producto">
+          <a href="${imagenHref}" data-lightbox="galeria">
+            <img src="${imagenSrc}" alt="${producto.nombre}" class="imagen-producto">
           </a>
           ${esNuevo ? '<span class="badge-nuevo">Nuevo</span>' : ''}
         </div>
         <h3>${producto.nombre}</h3>
         ${producto.disponible ? `<p>Precio: $<span class="precio">${producto.precio}</span></p>` : '<p class="no-disponible-text">Sin stock</p>'}
-        <button class="agregar-carrito ${producto.tonos && producto.tonos.length > 0 ? 'con-tonos' : ''}"
+        <button class="agregar-carrito ${claseBoton}"
           data-id="${producto.id}"
           data-nombre="${producto.nombre}"
           data-precio="${producto.precio}"
-          ${producto.tonos && producto.tonos.length > 0 ? `data-tonos="${producto.tonos.map(t => t.nombre).join(',')}" data-imagenes-tonos="${producto.tonos.map(t => t.imagen).join(',')}"` : ''}
-          ${!producto.disponible ? 'disabled' : ''}>
+          ${tonosData}
+          ${disabledAttr}>
           Agregar al carrito
         </button>
       </div>
     `;
+    
+    // Guardar en cache
+    cacheProductos.set(producto.id, html);
+    return html;
   }
 
   // Configurar el buscador
@@ -420,6 +595,166 @@ document.addEventListener('DOMContentLoaded', function() {
           this.getAttribute('data-precio')
         );
       });
+    });
+  }
+
+  // Configurar botones "Ver más" y "Ver menos"
+  function configurarBotonesVerMas() {
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('btn-ver-mas')) {
+        const categoria = e.target.getAttribute('data-categoria');
+        const mostrando = parseInt(e.target.getAttribute('data-mostrando'));
+        const seccion = document.getElementById(categoria);
+        
+        if (seccion) {
+          let contenedor, productosCategoria, totalProductos;
+          
+          if (categoria === 'todos') {
+            // Para la sección "todos"
+            contenedor = seccion.querySelector('#contenedor-todos');
+            // Aplicar filtros actuales (con verificación de existencia)
+            const buscador = document.getElementById('buscador');
+            const categoriaFiltroSelect = document.getElementById('categoriaFiltro');
+            const disponibilidadFiltroSelect = document.getElementById('disponibilidadFiltro');
+            
+            const filtro = buscador ? buscador.value : '';
+            const categoriaFiltro = categoriaFiltroSelect ? categoriaFiltroSelect.value : 'all';
+            const disponibilidadFiltro = disponibilidadFiltroSelect ? disponibilidadFiltroSelect.value : 'all';
+            
+            productosCategoria = todosProductos.filter(producto => {
+              const cumpleFiltro = !filtro || producto.nombre.toLowerCase().includes(filtro.toLowerCase());
+              const cumpleCategoria = categoriaFiltro === "all" || producto.categoria === categoriaFiltro;
+              const cumpleDisponibilidad = disponibilidadFiltro === "all" || 
+                (disponibilidadFiltro === "disponible" && producto.disponible) ||
+                (disponibilidadFiltro === "agotado" && !producto.disponible);
+              return cumpleFiltro && cumpleCategoria && cumpleDisponibilidad;
+            });
+            totalProductos = productosCategoria.length;
+          } else {
+            // Para secciones específicas
+            contenedor = seccion.querySelector('.productos-container');
+            productosCategoria = todosProductos.filter(p => p.categoria === categoria);
+            totalProductos = productosCategoria.length;
+          }
+          
+          const controles = seccion.querySelector('.controles-ver-mas');
+          
+          if (contenedor && controles) {
+            
+            // Mostrar 7 productos más
+            const nuevosProductos = productosCategoria.slice(mostrando, mostrando + 7);
+            const fragmentoNuevos = document.createDocumentFragment();
+            
+            nuevosProductos.forEach(producto => {
+              const productoHTML = crearHTMLProducto(producto);
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = productoHTML;
+              fragmentoNuevos.appendChild(tempDiv.firstElementChild);
+            });
+            
+            contenedor.appendChild(fragmentoNuevos);
+            
+            const nuevosMostrando = mostrando + 7;
+            
+            if (nuevosMostrando >= totalProductos) {
+              // Mostrar todos los productos, cambiar a "Ver menos"
+              controles.innerHTML = `
+                <div class="contador-productos">
+                  Mostrando todos los ${totalProductos} productos
+                </div>
+                <button class="btn-ver-menos" data-categoria="${categoria}">
+                  Ver menos productos
+                </button>
+              `;
+            } else {
+              // Actualizar contador y mantener "Ver más"
+              controles.innerHTML = `
+                <div class="contador-productos">
+                  Mostrando ${nuevosMostrando} de ${totalProductos} productos
+                </div>
+                <button class="btn-ver-mas" data-categoria="${categoria}" data-mostrando="${nuevosMostrando}">
+                  Ver más productos
+                </button>
+              `;
+            }
+            
+            // Reconfigurar eventos para los nuevos productos
+            configurarBotonesAgregar();
+            setupProductosConTonos();
+          }
+        }
+      }
+      
+      if (e.target.classList.contains('btn-ver-menos')) {
+        const categoria = e.target.getAttribute('data-categoria');
+        const seccion = document.getElementById(categoria);
+        
+        if (seccion) {
+          let contenedor, productosCategoria, totalProductos;
+          
+          if (categoria === 'todos') {
+            // Para la sección "todos"
+            contenedor = seccion.querySelector('#contenedor-todos');
+            // Aplicar filtros actuales (con verificación de existencia)
+            const buscador = document.getElementById('buscador');
+            const categoriaFiltroSelect = document.getElementById('categoriaFiltro');
+            const disponibilidadFiltroSelect = document.getElementById('disponibilidadFiltro');
+            
+            const filtro = buscador ? buscador.value : '';
+            const categoriaFiltro = categoriaFiltroSelect ? categoriaFiltroSelect.value : 'all';
+            const disponibilidadFiltro = disponibilidadFiltroSelect ? disponibilidadFiltroSelect.value : 'all';
+            
+            productosCategoria = todosProductos.filter(producto => {
+              const cumpleFiltro = !filtro || producto.nombre.toLowerCase().includes(filtro.toLowerCase());
+              const cumpleCategoria = categoriaFiltro === "all" || producto.categoria === categoriaFiltro;
+              const cumpleDisponibilidad = disponibilidadFiltro === "all" || 
+                (disponibilidadFiltro === "disponible" && producto.disponible) ||
+                (disponibilidadFiltro === "agotado" && !producto.disponible);
+              return cumpleFiltro && cumpleCategoria && cumpleDisponibilidad;
+            });
+            totalProductos = productosCategoria.length;
+          } else {
+            // Para secciones específicas
+            contenedor = seccion.querySelector('.productos-container');
+            productosCategoria = todosProductos.filter(p => p.categoria === categoria);
+            totalProductos = productosCategoria.length;
+          }
+          
+          const controles = seccion.querySelector('.controles-ver-mas');
+          
+          if (contenedor && controles) {
+            
+            // Mostrar solo los primeros 7 productos
+            const productosVisibles = productosCategoria.slice(0, 7);
+            const fragmentoVisible = document.createDocumentFragment();
+            
+            productosVisibles.forEach(producto => {
+              const productoHTML = crearHTMLProducto(producto);
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = productoHTML;
+              fragmentoVisible.appendChild(tempDiv.firstElementChild);
+            });
+            
+            // Limpiar y mostrar solo los primeros 7
+            contenedor.innerHTML = "";
+            contenedor.appendChild(fragmentoVisible);
+            
+            // Actualizar controles
+            controles.innerHTML = `
+              <div class="contador-productos">
+                Mostrando ${productosVisibles.length} de ${totalProductos} productos
+              </div>
+              <button class="btn-ver-mas" data-categoria="${categoria}" data-mostrando="7">
+                Ver más productos
+              </button>
+            `;
+            
+            // Reconfigurar eventos
+            configurarBotonesAgregar();
+            setupProductosConTonos();
+          }
+        }
+      }
     });
   }
 
@@ -516,7 +851,20 @@ document.addEventListener('DOMContentLoaded', function() {
         );
         modal.style.display = 'none';
       } else {
-        Swal.fire('Selección requerida', 'Por favor selecciona un tono', 'warning');
+        Swal.fire({
+          title: '¡Atención!',
+          text: 'Por favor selecciona una variante antes de agregar al carrito',
+          icon: 'warning',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#d85a7f',
+          background: '#fff9fa',
+          color: '#333333',
+          customClass: {
+            popup: 'swal-popup-custom',
+            title: 'swal-title-custom',
+            content: 'swal-content-custom'
+          }
+        });
       }
     });
 
