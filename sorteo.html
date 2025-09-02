@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteos TabyMakeup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="sorteo.css">
+  <link rel="icon" href="https://i.ibb.co/bRKcnmcc/imagen.webp" type="image/webp">
+  <meta name="google-site-verification" content="aTtFU9wyUv7tkRIIpubXngUgniWqyFoYp6z2XCQ-LXY" />
+</head>
+<body>
+  <header>
+    <h1 class="logo">
+      <span class="nombre">Taby</span><span class="makeup">Makeup</span>
+    </h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="carrito.html">Carrito</a></li>
+        <li><a href="sorteo.html" class="active">Sorteos</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero del sorteo -->
+    <section class="hero-sorteo">
+      <div class="hero-sorteo-contenido">
+        <div class="hero-sorteo-imagen">
+          <img src="neceser-sorteo.png" alt="Cartera llena de maquillajes" class="imagen-neceser">
+        </div>
+        <div class="hero-sorteo-texto">
+          <h1 class="titulo-sorteo">Rifa Beauty</h1>
+          <p class="subtitulo-sorteo">Cartera llena de maquillajes a tan solo</p>
+          <span class="precio-destacado">$2.000</span>
+          
+          <p class="fecha-sorteo">Fecha de sorteo: 22 de Septiembre</p>
+        </div>
+      </div>
+      
+      <!-- Aviso de próximos sorteos -->
+      <div class="aviso-inferior">
+        <div class="aviso-contenido-inferior">
+          <div class="aviso-icono-inferior">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div class="aviso-texto-inferior">
+            <span class="aviso-titulo-inferior">¡Atención!</span>
+            <span class="aviso-mensaje-inferior">Próximamente habrá un nuevo sorteo en colaboración con <strong>Pepina Calzados</strong></span>
+            <span class="aviso-redes-inferior">Seguinos en nuestras redes para más información:</span>
+          </div>
+          <div class="aviso-redes-iconos">
+            <a href="https://www.instagram.com/taby.makeup/" target="_blank" class="red-social-icono instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/5493735401893?text=Hola%20quiero%20hacer%20una%20consulta" target="_blank" class="red-social-icono whatsapp">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Información del premio -->
+    <section class="info-premio">
+      <div class="container">
+        <h2>Vas a participar por:</h2>
+        <div class="premio-descripcion">
+          <div class="premio-detalles">
+            <h3>Cartera llena de productos de maquillaje</h3>
+            <p>¡Recibi la primavera con un super premio!¡Los productos los elegis vos! No te lo podés perder! </p>
+          </div>
+          <div class="premio-imagen">
+            <img src="neceser-sorteo.png" alt="Cartera llena de maquillajes" class="imagen-premio">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cómo participar -->
+    <section class="como-participar">
+      <div class="container">
+        <h2>Cómo participar</h2>
+        <div class="pasos-participacion">
+          <div class="paso">
+            <div class="numero-paso">1</div>
+            <div class="contenido-paso">
+              <h3>Elige tu número</h3>
+              <p>Selecciona uno o más números. Cada número tiene un costo de $2.000.</p>
+            </div>
+          </div>
+          <div class="paso">
+            <div class="numero-paso">2</div>
+            <div class="contenido-paso">
+              <h3>Realiza el pago</h3>
+              <p>Copia el alias o CBU y envia el monto correspondiente.</p>
+            </div>
+          </div>
+          <div class="paso">
+            <div class="numero-paso">3</div>
+            <div class="contenido-paso">
+              <h3>Envía el comprobante</h3>
+              <p>Envía el comprobante de pago por WhatsApp al número:</p>
+              <div class="numero-whatsapp-paso">
+                <span class="numero-whatsapp-texto">+54 9 3735 40-1893</span>
+                <button class="btn-copiar-paso" data-text="+5493735401893">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+              <p class="texto-paso-detalle">con tu nombre y números seleccionados.</p>
+            </div>
+          </div>
+          <div class="paso">
+            <div class="numero-paso">4</div>
+            <div class="contenido-paso">
+              <h3>¡Listo, estás participando!</h3>
+              <p>Una vez confirmado tu pago, tus números quedarán reservados y estarás participando en el sorteo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Datos de pago -->
+    <section class="datos-pago">
+      <div class="container">
+        <h2>Datos para el pago</h2>
+        <div class="pago-opciones">
+          <div class="opcion-pago">
+            <h3>Mercado Pago (Alias)</h3>
+            <div class="copiar-container">
+              <span class="dato-pago">taby.makeup</span>
+              <button class="btn-copiar" data-text="taby.makeup">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div> 
+          <div class="opcion-pago">
+            <h3>Mercado Pago (CBU) </h3>
+            <div class="copiar-container">
+              <span class="dato-pago">0000003100057221125753</span>
+              <button class="btn-copiar" data-text="0000003100057221125753">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+          </div>
+
+        <div class="instruccion-pago">
+          <p>Después de realizar el pago, envía el comprobante por WhatsApp al número:</p>
+          <div class="numero-whatsapp-container">
+            <span class="numero-whatsapp">+54 9 3735 40-1893</span>
+            <button class="btn-copiar-numero" data-text="+5493735401893">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          <p class="instruccion-detalle">con tu nombre completo y los números que seleccionaste.</p>
+          <div class="btn-comprobante-container">
+            <a href="https://wa.me/5493735401893?text=Hola,%20quiero%20enviar%20el%20comprobante%20de%20pago%20del%20sorteo" class="btn-comprobante" target="_blank">
+              <i class="fab fa-whatsapp"></i> Enviar comprobante
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- Reglas del sorteo -->
+    <section class="reglas-sorteo">
+      <div class="container">
+        <h2>Reglas a seguir</h2>
+        <div class="reglas-contenido">
+          <div class="regla">
+            <h3>Participación</h3>
+            <p>Cada número tiene un valor de $2.000. Puedes adquirir tantos números como desees para aumentar tus posibilidades de ganar.</p>
+          </div>
+          <div class="regla">
+            <h3>Pago</h3>
+            <p>El pago debe realizarse mediante el alias o CBU proporcionado.</p>
+          </div>
+          <div class="regla">
+            <h3>Comprobante</h3>
+            <p>Debes enviar el comprobante de pago al WhatsApp +54 9 3735 40-1893 con tu nombre completo y los números seleccionados.</p>
+          </div>
+          <div class="regla">
+            <h3>Sorteo</h3>
+            <p>El sorteo se realizará el 22 de Septiembre.</p>
+          </div>
+          
+          <div class="regla">
+            <h3>Devoluciones</h3>
+            <p>Una vez confirmado el pago, no se realizan devoluciones ya que los números quedan reservados inmediatamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to action -->
+    <section class="cta-sorteo">
+      <div class="container">
+        <h2>¡No te quedes fuera!</h2>
+        <p>Participa de esta increible rifa y de todos los demás sorteos que se vienen.<p>
+        <div class="botones-accion">
+          <a href="https://wa.me/+5493735401893?text=Hola,%20quiero%20participar%20en%20el%20sorteo" class="btn-principal">Pedir número</a>
+         
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-contenido">
+      <div class="footer-contacto">
+        <p><i class="fas fa-map-marker-alt"></i> Maipú y del Valle Iberlucea, Villa Ángela, Chaco</p>
+      </div>
+
+      <div class="footer-redes">
+        <a href="https://www.instagram.com/taby.makeup/" target="_blank" aria-label="Instagram">
+          <i class="fab fa-instagram"></i>
+        </a>
+      
+        <a href="https://wa.me/5493735401893?text=Hola%20quiero%20hacer%20una%20consulta" target="_blank" aria-label="WhatsApp contacto">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://www.whatsapp.com/channel/0029VakE1TsLtOjJrkKlFO1R" target="_blank" aria-label="Canal de WhatsApp">
+          <i class="fas fa-bullhorn"></i>
+        </a>
+        <a href="https://chat.whatsapp.com/DHjxFQ96gIdFed6FHR1PQA" target="_blank" aria-label="Grupo de WhatsApp">
+          <i class="fas fa-users"></i>
+        </a>
+      </div>
+    </div>
+
+    <p class="footer-derechos">&copy; 2025 TabyMakeup. Todos los derechos reservados.</p>
+  </footer>
+
+  <button class="scroll-top-btn" id="scrollTopBtn">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script>
+    // Scroll suave al hacer clic en los enlaces del menú
+    document.querySelectorAll('nav a, .btn-secundario').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId.startsWith('#')) {
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: 'smooth'
+            });
+          }
+        } else {
+          window.location.href = this.href;
+        }
+      });
+    });
+
+    // Botón scroll to top y header que se oculta
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    const header = document.querySelector('header');
+    let lastScrollTop = 0;
+    
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Mostrar/ocultar botón scroll to top
+      if (scrollTop > 300) {
+        scrollTopBtn.style.display = 'block';
+      } else {
+        scrollTopBtn.style.display = 'none';
+      }
+      
+      // Ocultar/mostrar header al hacer scroll
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling hacia abajo
+        header.classList.add('hidden');
+      } else {
+        // Scrolling hacia arriba
+        header.classList.remove('hidden');
+      }
+      
+      lastScrollTop = scrollTop;
+    });
+    
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Animación de aparición de secciones al hacer scroll
+    const sections = document.querySelectorAll('section');
+    
+    const checkSectionVisibility = () => {
+      sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        
+        if (sectionTop < windowHeight * 0.85) {
+          section.classList.add('visible');
+        }
+      });
+    };
+    
+    window.addEventListener('scroll', checkSectionVisibility);
+    window.addEventListener('load', checkSectionVisibility);
+
+    // Funcionalidad para copiar datos de pago
+    document.querySelectorAll('.btn-copiar, .btn-copiar-numero, .btn-copiar-paso').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const textToCopy = this.getAttribute('data-text');
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          // Mostrar notificación de copiado
+          const notification = document.createElement('div');
+          notification.className = 'notificacion-copiado';
+          notification.textContent = '¡Copiado al portapapeles!';
+          document.body.appendChild(notification);
+          
+          // Eliminar la notificación después de 3 segundos
+          setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+              document.body.removeChild(notification);
+            }, 300);
+          }, 3000);
+        }).catch(err => {
+          console.error('Error al copiar: ', err);
+        });
+      });
+    });
+
+    // Funcionalidad para seleccionar números
+    document.querySelectorAll('.numero.disponible').forEach(numero => {
+      numero.addEventListener('click', function() {
+        const numeroSeleccionado = this.getAttribute('data-numero');
+        const mensaje = `Hola, me interesa participar en el sorteo. Quisiera adquirir el número ${numeroSeleccionado}.`;
+        window.open(`https://wa.me/573217896543?text=${encodeURIComponent(mensaje)}`, '_blank');
+      });
+    });
+  </script>
+</body>
+</html>
+</html>
