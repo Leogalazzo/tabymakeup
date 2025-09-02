@@ -26,6 +26,17 @@
   </header>
 
   <main>
+    <!-- Banner compacto de sorteo en carrito -->
+    <div class="banner-sorteo-carrito">
+      <div class="banner-sorteo-contenido">
+        <div class="banner-sorteo-texto">
+          <i class="fas fa-gift"></i>
+          <span class="texto-sorteo">¿Ya estas participando por la cartera?</span>
+        </div>
+        <a href="sorteo.html" class="btn-ver-sorteo">Más información</a>
+      </div>
+    </div>
+
     <section id="carrito">
       <h2>Productos seleccionados</h2>
       <ul id="lista-carrito">
@@ -35,6 +46,8 @@
       <button id="btn-eliminar-todo" class="btn-eliminar-todo">
         Vaciar carrito
       </button>
+      
+
       
       <button id="btn-whatsapp">
         <i class="fab fa-whatsapp" style="margin-right: 10px;"></i> Enviar pedido
@@ -67,6 +80,98 @@
 
   <p class="footer-derechos">&copy; 2025 TabyMakeup. Todos los derechos reservados.</p>
 </footer>
+
+
+
+  <script>
+    // Función para copiar texto al portapapeles con notificación
+    function copiarTexto(texto, mensaje) {
+      navigator.clipboard.writeText(texto).then(() => {
+        // Mostrar notificación personalizada
+        mostrarNotificacion(mensaje);
+        
+        // Cambiar el botón temporalmente
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅';
+        btn.style.background = '#4CAF50';
+        
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 1500);
+      }).catch(() => {
+        // Fallback para navegadores que no soportan clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = texto;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        mostrarNotificacion(mensaje);
+        
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅';
+        btn.style.background = '#4CAF50';
+        
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 1500);
+      });
+    }
+
+    // Función para mostrar notificación
+    function mostrarNotificacion(mensaje) {
+      // Crear elemento de notificación
+      const notificacion = document.createElement('div');
+      notificacion.className = 'notificacion-copiado';
+      notificacion.textContent = mensaje;
+      
+      // Agregar estilos
+      notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideInRight 0.3s ease;
+      `;
+      
+      // Agregar al DOM
+      document.body.appendChild(notificacion);
+      
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        notificacion.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notificacion);
+        }, 300);
+      }, 3000);
+    }
+
+    // Agregar estilos de animación para las notificaciones
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 
   <script type="module" src="carrito.js"></script>
 </body>
