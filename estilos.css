@@ -1,4 +1,3 @@
-
 /* ==================== */
 /* VARIABLES Y ESTILOS BASE */
 /* ==================== */
@@ -1801,6 +1800,46 @@ main {
   box-shadow: none;
 }
 
+.hero-btn.sorteo-btn {
+  background: linear-gradient(135deg, var(--rosa-oscuro) 0%, var(--rosa-principal) 50%, var(--rosa-oscuro) 100%);
+  color: white;
+  border: 2px solid var(--rosa-oscuro);
+  font-weight: 800;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(216, 90, 127, 0.4), 0 0 20px rgba(216, 90, 127, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px rgba(0, 0, 0, 0.3);
+  animation: sorteoGlow 3s ease-in-out infinite;
+  letter-spacing: 0.5px;
+}
+
+.hero-btn.sorteo-btn i {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.hero-btn.sorteo-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.hero-btn.sorteo-btn:hover::before {
+  left: 100%;
+}
+
+.hero-btn.sorteo-btn:hover {
+  background: linear-gradient(135deg, var(--rosa-principal) 0%, var(--rosa-oscuro) 50%, var(--rosa-principal) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(216, 90, 127, 0.6);
+  border-color: var(--rosa-principal);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
 .hero-social {
   display: flex;
   gap: 0.8rem;
@@ -2290,5 +2329,229 @@ ofertas {
   text-align: center;
   margin: 1rem 0;
 }
+
+
+
+
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==================== */
+/* ESTILOS PARA SWEETALERT2 */
+/* ==================== */
+.swal-popup-custom {
+  border-radius: 15px !important;
+  border: 2px solid var(--rosa-claro) !important;
+  box-shadow: 0 10px 30px rgba(216, 90, 127, 0.3) !important;
+}
+
+.swal-title-custom {
+  color: var(--rosa-oscuro) !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.3rem !important;
+}
+
+.swal-content-custom {
+  color: var(--negro) !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Personalizar el ícono de warning */
+.swal2-icon.swal2-warning {
+  border-color: var(--rosa-principal) !important;
+  color: var(--rosa-principal) !important;
+}
+
+.swal2-icon.swal2-warning .swal2-icon-content {
+  color: var(--rosa-principal) !important;
+}
+
+/* Personalizar el botón de confirmación */
+.swal2-styled.swal2-confirm {
+  background-color: var(--rosa-oscuro) !important;
+  border: none !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  font-family: 'Montserrat', sans-serif !important;
+  padding: 0.7rem 1.5rem !important;
+  font-size: 0.9rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal2-styled.swal2-confirm:hover {
+  background-color: var(--rosa-principal) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 15px rgba(216, 90, 127, 0.4) !important;
+}
+
+/* Personalizar el fondo del modal */
+.swal2-backdrop-show {
+  background-color: rgba(51, 51, 51, 0.6) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* ==================== */
+/* ANIMACIÓN PARA BOTÓN DE SORTEO */
+/* ==================== */
+@keyframes sorteoGlow {
+  0% {
+    box-shadow: 0 8px 25px rgba(216, 90, 127, 0.4), 0 0 20px rgba(216, 90, 127, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 25px rgba(216, 90, 127, 0.6), 0 0 30px rgba(216, 90, 127, 0.5);
+  }
+  100% {
+    box-shadow: 0 8px 25px rgba(216, 90, 127, 0.4), 0 0 20px rgba(216, 90, 127, 0.3);
+  }
+}
+
+/* ==================== */
+/* ESTILOS PARA ERROR DE CARGA */
+/* ==================== */
+.error-carga {
+  text-align: center;
+  padding: 2rem;
+  color: var(--rosa-oscuro);
+  background: rgba(216, 90, 127, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(216, 90, 127, 0.3);
+  margin: 1rem 0;
+}
+
+.error-carga p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ==================== */
+/* CONTROLES VER MÁS PRODUCTOS */
+/* ==================== */
+.controles-ver-mas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 192, 203, 0.1), rgba(216, 90, 127, 0.05));
+  border-radius: 15px;
+  border: 1px solid rgba(216, 90, 127, 0.2);
+}
+
+.contador-productos {
+  color: var(--rosa-oscuro);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  border: 1px solid rgba(216, 90, 127, 0.3);
+}
+
+.btn-ver-mas,
+.btn-ver-menos {
+  background: linear-gradient(135deg, var(--rosa-principal) 0%, var(--rosa-oscuro) 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(216, 90, 127, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ver-mas::before,
+.btn-ver-menos::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-ver-mas:hover,
+.btn-ver-menos:hover {
+  background: linear-gradient(135deg, var(--rosa-oscuro) 0%, var(--rosa-principal) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(216, 90, 127, 0.4);
+}
+
+.btn-ver-mas:hover::before,
+.btn-ver-menos:hover::before {
+  left: 100%;
+}
+
+.btn-ver-menos {
+  background: linear-gradient(135deg, var(--rosa-claro) 0%, var(--rosa-principal) 100%);
+  color: var(--rosa-oscuro);
+}
+
+.btn-ver-menos:hover {
+  background: linear-gradient(135deg, var(--rosa-principal) 0%, var(--rosa-oscuro) 100%);
+  color: white;
+}
+
+/* Responsive para controles */
+@media (max-width: 768px) {
+  .controles-ver-mas {
+    padding: 1rem;
+    gap: 0.8rem;
+  }
+  
+  .contador-productos {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .btn-ver-mas,
+  .btn-ver-menos {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .controles-ver-mas {
+    padding: 0.8rem;
+    gap: 0.6rem;
+  }
+  
+  .contador-productos {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  .btn-ver-mas,
+  .btn-ver-menos {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
 
 
