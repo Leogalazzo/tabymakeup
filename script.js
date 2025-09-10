@@ -1,4 +1,3 @@
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
 import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
@@ -484,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
       setupProductosConTonos();
       configurarBotonesAgregar();
       configurarBotonesVerMas();
-      lightbox.init();
+      // lightbox.init(); // deshabilitado: se usa modal propio
       window.eventosConfigurados = true;
     }
 
@@ -526,13 +525,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const html = `
       <div class="producto ${claseProducto}">
         <div class="producto-imagen-container">
-          <a href="${imagenHref}" data-lightbox="galeria">
-            <img src="${imagenSrc}" alt="${producto.nombre}" class="imagen-producto">
+          <a href="${imagenHref}" class="ampliar-imagen" data-nombre="${producto.nombre}" data-precio="${producto.precio}" title="${producto.nombre} · $${producto.precio}">
+            <img src="${imagenSrc}" alt="${producto.nombre}" class="imagen-producto" loading="lazy">
           </a>
           ${esNuevo ? '<span class="badge-nuevo">Nuevo</span>' : ''}
         </div>
         <h3>${producto.nombre}</h3>
-        ${producto.disponible ? `<p>Precio: $<span class="precio">${producto.precio}</span></p>` : '<p class="no-disponible-text">Sin stock</p>'}
+        ${producto.disponible ? `<p class="precio">$${producto.precio}</p>` : '<p class="no-disponible-text">Sin stock</p>'}
         <button class="agregar-carrito ${claseBoton}"
           data-id="${producto.id}"
           data-nombre="${producto.nombre}"
@@ -588,12 +587,34 @@ document.addEventListener('DOMContentLoaded', function() {
   // Configurar botones "Agregar al carrito" sin tonos
   function configurarBotonesAgregar() {
     document.querySelectorAll('.agregar-carrito:not(.con-tonos)').forEach(boton => {
-      boton.addEventListener('click', function() {
+      // Limpiar listeners previos
+      const nuevoBoton = boton.cloneNode(true);
+      boton.parentNode.replaceChild(nuevoBoton, boton);
+
+      nuevoBoton.addEventListener('click', function() {
+        // Estado de carga visual
+        this.classList.add('cargando');
+        const textoOriginal = this.textContent;
+        this.textContent = 'Agregando...';
+
         agregarAlCarrito(
           this.getAttribute('data-id'),
           this.getAttribute('data-nombre'),
-          this.getAttribute('data-precio')
+          this.getAttribute('data-precio'),
+          '',
+          true // silenciar notificación interna
         );
+
+        // Cambiar a "Agregado" y luego mostrar la notificación
+        setTimeout(() => {
+          this.classList.remove('cargando');
+          this.textContent = 'Agregado ✓';
+          const nombre = this.getAttribute('data-nombre');
+          mostrarNotificacion(`¡${nombre} agregado al carrito!`);
+          setTimeout(() => {
+            this.textContent = textoOriginal;
+          }, 1200);
+        }, 500);
       });
     });
   }
@@ -767,38 +788,45 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagenVistaPrevia = document.getElementById('imagenVistaPrevia');
     const vistaPreviaContainer = modal.querySelector('.vista-previa');
 
-    // Limpiar eventos previos del botón de agregar en el modal
+    // Botón Agregar en modal (re-bind seguro)
     const botonAgregarModal = modal.querySelector('.modal-contenido button');
     const nuevoBotonAgregar = botonAgregarModal.cloneNode(true);
     botonAgregarModal.parentNode.replaceChild(nuevoBotonAgregar, botonAgregarModal);
 
-    document.querySelectorAll('.agregar-carrito.con-tonos').forEach(boton => {
-      boton.addEventListener('click', function() {
+    // Delegación de eventos: un solo listener para abrir modal de tonos
+    if (!window.tonosHandlerAdded) {
+      document.addEventListener('click', (ev) => {
+        const boton = ev.target.closest('.agregar-carrito.con-tonos');
+        if (!boton) return;
+        ev.preventDefault();
+
         productoSeleccionado = {
-          id: this.getAttribute('data-id'),
-          nombre: this.getAttribute('data-nombre'),
-          precio: this.getAttribute('data-precio')
+          id: boton.getAttribute('data-id'),
+          nombre: boton.getAttribute('data-nombre'),
+          precio: boton.getAttribute('data-precio')
         };
 
-        const tonos = this.getAttribute('data-tonos').split(',');
-        const imagenesTonos = this.getAttribute('data-imagenes-tonos').split(',');
+        const tonosStr = boton.getAttribute('data-tonos') || '';
+        const imagenesStr = boton.getAttribute('data-imagenes-tonos') || '';
+        const tonos = tonosStr.split(',');
+        const imagenesTonos = imagenesStr.split(',');
 
         tonosContainer.innerHTML = '';
         if (vistaPreviaContainer) vistaPreviaContainer.style.display = 'none';
         if (imagenVistaPrevia) imagenVistaPrevia.style.display = 'none';
 
         const producto = todosProductos.find(p => p.id === productoSeleccionado.id);
+        const frag = document.createDocumentFragment();
+
         tonos.forEach((tono, index) => {
-          const tonoData = producto.tonos[index];
+          const tonoData = producto?.tonos?.[index] || { disponible: true };
           const divTono = document.createElement('div');
           divTono.className = 'tono-item';
-          
+
           const nombreTono = document.createElement('span');
           nombreTono.className = 'nombre-tono';
-          nombreTono.textContent = tono.trim();
-          if (!tonoData.disponible) {
-            nombreTono.classList.add('no-disponible');
-          }
+          nombreTono.textContent = (tono || '').trim();
+          if (!tonoData.disponible) nombreTono.classList.add('no-disponible');
           divTono.appendChild(nombreTono);
 
           if (!tonoData.disponible) {
@@ -809,48 +837,68 @@ document.addEventListener('DOMContentLoaded', function() {
           } else {
             const botonTono = document.createElement('button');
             botonTono.className = 'tono';
-            botonTono.setAttribute('data-tono', tono.trim());
-            if (imagenesTonos[index] && imagenesTonos[index].trim() !== '') {
-              botonTono.setAttribute('data-imagen', imagenesTonos[index].trim());
-            }
+            botonTono.setAttribute('data-tono', (tono || '').trim());
+            const imgSrc = (imagenesTonos[index] || '').trim();
+            if (imgSrc) botonTono.setAttribute('data-imagen', imgSrc);
             botonTono.textContent = 'Seleccionar';
-            
-            botonTono.addEventListener('click', function() {
-              document.querySelectorAll('.tono').forEach(t => t.classList.remove('seleccionado'));
-              this.classList.add('seleccionado');
-              tonoSeleccionado = this.getAttribute('data-tono');
-
-              const imagen = this.getAttribute('data-imagen');
-              if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
-                imagenVistaPrevia.src = imagen;
-                imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
-                imagenVistaPrevia.style.display = 'block';
-                vistaPreviaContainer.style.display = 'flex';
-              }
-            });
-
             divTono.appendChild(botonTono);
           }
 
-          tonosContainer.appendChild(divTono);
+          frag.appendChild(divTono);
         });
 
+        tonosContainer.appendChild(frag);
         modal.style.display = 'block';
         tonoSeleccionado = '';
       });
-    });
+      // Delegación para seleccionar tono y vista previa
+      document.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.tono');
+        if (!btn) return;
+        document.querySelectorAll('.tono').forEach(t => t.classList.remove('seleccionado'));
+        btn.classList.add('seleccionado');
+        tonoSeleccionado = btn.getAttribute('data-tono');
+        const imagen = btn.getAttribute('data-imagen');
+        if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
+          imagenVistaPrevia.src = imagen;
+          imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
+          imagenVistaPrevia.style.display = 'block';
+          vistaPreviaContainer.style.display = 'flex';
+        }
+      });
+      window.tonosHandlerAdded = true;
+    }
 
-    // Configurar botón de agregar en el modal
+    // Confirmación en modal con efecto de carga y cierre
     nuevoBotonAgregar.addEventListener('click', function() {
       if (tonoSeleccionado && productoSeleccionado) {
+        const btn = this;
+        const textoOriginal = btn.textContent;
+        btn.classList.add('cargando');
+        btn.textContent = 'Agregando...';
+
         agregarAlCarrito(
           productoSeleccionado.id,
           productoSeleccionado.nombre,
           productoSeleccionado.precio,
-          tonoSeleccionado
+          tonoSeleccionado,
+          true
         );
-        modal.style.display = 'none';
+
+        setTimeout(() => {
+          btn.classList.remove('cargando');
+          btn.textContent = 'Agregado ✓';
+          // notificación visible
+          const nombreNotif = `${productoSeleccionado.nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''}`;
+          mostrarNotificacion(`¡${nombreNotif} agregado al carrito!`);
+          // cerrar modal luego de mostrar el estado
+          setTimeout(() => {
+            modal.style.display = 'none';
+            btn.textContent = textoOriginal;
+          }, 700);
+        }, 500);
       } else {
+        // Garantizar configuración consistente del popup
         Swal.fire({
           title: '¡Atención!',
           text: 'Por favor selecciona una variante antes de agregar al carrito',
@@ -863,12 +911,22 @@ document.addEventListener('DOMContentLoaded', function() {
             popup: 'swal-popup-custom',
             title: 'swal-title-custom',
             content: 'swal-content-custom'
+          },
+          allowOutsideClick: true,
+          allowEscapeKey: true,
+          heightAuto: false,
+          didOpen: () => {
+            // Prevenir scroll del body y asegurar centrado
+            document.body.style.overflow = 'hidden';
+          },
+          willClose: () => {
+            document.body.style.overflow = '';
           }
         });
       }
     });
 
-    // Configurar cierre del modal
+    // Cierre del modal
     modal.querySelector('.cerrar').addEventListener('click', function() {
       modal.style.display = 'none';
     });
@@ -893,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Función para agregar al carrito
-  function agregarAlCarrito(id, nombre, precio, tonoSeleccionado = '') {
+  function agregarAlCarrito(id, nombre, precio, tonoSeleccionado = '', silenciarNotificacion = false) {
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
     const productoExistente = carrito.find(item => item.id === id && item.tono === tonoSeleccionado);
 
@@ -913,7 +971,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarCarrito();
-    mostrarNotificacion(`¡${nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''} agregado al carrito!`);
+    if (!silenciarNotificacion) {
+      mostrarNotificacion(`¡${nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''} agregado al carrito!`);
+    }
   }
 
   // Función para actualizar el carrito
@@ -1026,6 +1086,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const modalImagen = document.getElementById('modalImagen');
   if (modalImagen) {
     const cerrarImagen = document.querySelector('.cerrar-imagen');
+    const imagenAmpliada = document.getElementById('imagenAmpliada');
+    const pieImagen = document.querySelector('.pie-imagen');
+
+    // Apertura con nuestro sistema propio
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a.ampliar-imagen');
+      if (!link) return;
+      e.preventDefault();
+      const src = link.getAttribute('href');
+      const nombre = link.getAttribute('data-nombre') || '';
+      const precio = link.getAttribute('data-precio') || '';
+      if (imagenAmpliada && pieImagen) {
+        imagenAmpliada.src = src;
+        pieImagen.textContent = `${nombre}${precio ? ' · $' + precio : ''}`;
+        modalImagen.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
+    });
 
     if (cerrarImagen) {
       cerrarImagen.addEventListener('click', function() {
