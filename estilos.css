@@ -2197,6 +2197,7 @@ ofertas {
               rgba(255, 155, 179, 0.15) 100%);
     z-index: 1;
     animation: glitter 6s ease infinite;
+    pointer-events: none;
 }
 
 #ofertas::after {
@@ -2211,6 +2212,7 @@ ofertas {
               #ff69b4, 
               var(--rosa-oscuro));
     animation: glitter 5s ease infinite;
+    pointer-events: none;
 }
 
 #ofertas h2 {
@@ -2243,6 +2245,17 @@ ofertas {
 #ofertas .productos-container {
     position: relative;
     z-index: 2;
+}
+
+#ofertas .controles-ver-mas {
+    position: relative;
+    z-index: 3;
+}
+
+/* Badge "Nuevo" en la izquierda solo para productos de oferta */
+#ofertas .badge-nuevo {
+    left: 8px;
+    right: auto;
 }
 
 #ofertas .producto {
@@ -2728,5 +2741,4 @@ ofertas {
     font-size: 0.8rem;
   }
 }
-
 
