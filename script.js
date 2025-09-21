@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Configurar buscador y filtros solo una vez
       if (!window.buscadorConfigurado) {
-        configurarBuscador();
-        configurarFiltros();
+      configurarBuscador();
+      configurarFiltros();
         window.buscadorConfigurado = true;
       }
       
@@ -359,6 +359,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           }
         }
+        
+        // Siempre agregar productos de ofertas a fragmentosSecciones
+        if (producto.categoria === 'ofertas') {
+          const seccionOfertas = document.getElementById('ofertas');
+          if (seccionOfertas) {
+            const contenedorOfertas = seccionOfertas.querySelector(".productos-container");
+            if (contenedorOfertas) {
+              if (!fragmentosSecciones['ofertas']) {
+                fragmentosSecciones['ofertas'] = document.createDocumentFragment();
+              }
+              fragmentosSecciones['ofertas'].appendChild(productoElement.cloneNode(true));
+            }
+          }
+        }
+        
       });
       
       // Limpiar contenedor "todos" y controles existentes
@@ -448,6 +463,8 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       });
+      
+      
     }
 
     // Mostrar u ocultar mensaje en la sección de ofertas
@@ -480,8 +497,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Configurar eventos solo si es necesario
     if (!window.eventosConfigurados) {
-      setupProductosConTonos();
-      configurarBotonesAgregar();
+    setupProductosConTonos();
+    configurarBotonesAgregar();
       configurarBotonesVerMas();
       // lightbox.init(); // deshabilitado: se usa modal propio
       window.eventosConfigurados = true;
@@ -502,10 +519,10 @@ document.addEventListener('DOMContentLoaded', function() {
       return cacheProductos.get(producto.id);
     }
     
-    const esNuevoPorFecha = producto.fechaSubida 
-      ? (Date.now() - new Date(producto.fechaSubida).getTime()) / (1000 * 60 * 60 * 24) <= 15
-      : false;
-    const esNuevo = producto.esNuevo || esNuevoPorFecha;
+  const esNuevoPorFecha = producto.fechaSubida 
+    ? (Date.now() - new Date(producto.fechaSubida).getTime()) / (1000 * 60 * 60 * 24) <= 15
+    : false;
+  const esNuevo = producto.esNuevo || esNuevoPorFecha;
     
     // Pre-calcular strings para evitar concatenaciones repetitivas
     const claseProducto = !producto.disponible ? 'no-disponible' : '';
@@ -622,9 +639,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Configurar botones "Ver más" y "Ver menos"
   function configurarBotonesVerMas() {
     document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('btn-ver-mas')) {
-        const categoria = e.target.getAttribute('data-categoria');
-        const mostrando = parseInt(e.target.getAttribute('data-mostrando'));
+      // Verificar si el clic es en un botón o dentro de controles-ver-mas
+      const btnVerMas = e.target.closest('.btn-ver-mas');
+      if (btnVerMas) {
+        const categoria = btnVerMas.getAttribute('data-categoria');
+        const mostrando = parseInt(btnVerMas.getAttribute('data-mostrando'));
         const seccion = document.getElementById(categoria);
         
         if (seccion) {
@@ -650,6 +669,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 (disponibilidadFiltro === "agotado" && !producto.disponible);
               return cumpleFiltro && cumpleCategoria && cumpleDisponibilidad;
             });
+            totalProductos = productosCategoria.length;
+          } else if (categoria === 'ofertas') {
+            // Para la sección "ofertas" - tratarla como categoría normal
+            contenedor = seccion.querySelector('.productos-container');
+            productosCategoria = todosProductos.filter(p => p.categoria === 'ofertas');
             totalProductos = productosCategoria.length;
           } else {
             // Para secciones específicas
@@ -706,8 +730,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
       
-      if (e.target.classList.contains('btn-ver-menos')) {
-        const categoria = e.target.getAttribute('data-categoria');
+      // Verificar si el clic es en un botón "Ver menos"
+      const btnVerMenos = e.target.closest('.btn-ver-menos');
+      if (btnVerMenos) {
+        const categoria = btnVerMenos.getAttribute('data-categoria');
         const seccion = document.getElementById(categoria);
         
         if (seccion) {
@@ -733,6 +759,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 (disponibilidadFiltro === "agotado" && !producto.disponible);
               return cumpleFiltro && cumpleCategoria && cumpleDisponibilidad;
             });
+            totalProductos = productosCategoria.length;
+          } else if (categoria === 'ofertas') {
+            // Para la sección "ofertas" - tratarla como categoría normal
+            contenedor = seccion.querySelector('.productos-container');
+            productosCategoria = todosProductos.filter(p => p.categoria === 'ofertas');
             totalProductos = productosCategoria.length;
           } else {
             // Para secciones específicas
@@ -822,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const tonoData = producto?.tonos?.[index] || { disponible: true };
           const divTono = document.createElement('div');
           divTono.className = 'tono-item';
-
+          
           const nombreTono = document.createElement('span');
           nombreTono.className = 'nombre-tono';
           nombreTono.textContent = (tono || '').trim();
@@ -859,13 +890,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.classList.add('seleccionado');
         tonoSeleccionado = btn.getAttribute('data-tono');
         const imagen = btn.getAttribute('data-imagen');
-        if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
-          imagenVistaPrevia.src = imagen;
-          imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
-          imagenVistaPrevia.style.display = 'block';
-          vistaPreviaContainer.style.display = 'flex';
-        }
-      });
+              if (imagen && imagenVistaPrevia && vistaPreviaContainer) {
+                imagenVistaPrevia.src = imagen;
+                imagenVistaPrevia.alt = `Vista previa de ${tonoSeleccionado}`;
+                imagenVistaPrevia.style.display = 'block';
+                vistaPreviaContainer.style.display = 'flex';
+              }
+            });
       window.tonosHandlerAdded = true;
     }
 
@@ -893,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
           mostrarNotificacion(`¡${nombreNotif} agregado al carrito!`);
           // cerrar modal luego de mostrar el estado
           setTimeout(() => {
-            modal.style.display = 'none';
+        modal.style.display = 'none';
             btn.textContent = textoOriginal;
           }, 700);
         }, 500);
@@ -972,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarCarrito();
     if (!silenciarNotificacion) {
-      mostrarNotificacion(`¡${nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''} agregado al carrito!`);
+    mostrarNotificacion(`¡${nombre}${tonoSeleccionado ? ' - ' + tonoSeleccionado : ''} agregado al carrito!`);
     }
   }
 
