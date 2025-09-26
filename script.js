@@ -201,312 +201,261 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
     // Función para renderizar productos con filtrado
-  function renderizarProductos(filtro = "", categoria = "all", disponible = "all") {
-    const contenedorTodos = document.getElementById("contenedor-todos");
-    const secciones = document.querySelectorAll(".seccion-productos");
-    const loadingIndicator = document.getElementById("loadingIndicator");
+  // Función para renderizar productos con filtrado
+function renderizarProductos(filtro = "", categoria = "all", disponible = "all") {
+  const contenedorTodos = document.getElementById("contenedor-todos");
+  const secciones = document.querySelectorAll(".seccion-productos");
+  const loadingIndicator = document.getElementById("loadingIndicator");
 
-    if (!contenedorTodos || !secciones.length) return;
+  if (!contenedorTodos || !secciones.length) return;
 
-    if (loadingIndicator) loadingIndicator.style.display = "block";
+  if (loadingIndicator) loadingIndicator.style.display = "block";
 
-    // Limpiar contenedores
-    contenedorTodos.innerHTML = "";
-    contenedorTodos.classList.remove('sin-resultados');
-    secciones.forEach(seccion => {
-      const contenedor = seccion.querySelector(".productos-container");
-      if (contenedor) contenedor.innerHTML = "";
+  // Limpiar contenedores
+  contenedorTodos.innerHTML = "";
+  contenedorTodos.classList.remove('sin-resultados');
+  secciones.forEach(seccion => {
+    const contenedor = seccion.querySelector(".productos-container");
+    if (contenedor) contenedor.innerHTML = "";
+  });
+
+  // Crear o actualizar el contenedor de resultados de búsqueda
+  let resultadosTitulo = document.getElementById("resultados-titulo");
+  if (!resultadosTitulo) {
+    resultadosTitulo = document.createElement("div");
+    resultadosTitulo.id = "resultados-titulo";
+    resultadosTitulo.className = "resultados-busqueda";
+    const sectionTodos = document.getElementById("todos");
+    sectionTodos.insertBefore(resultadosTitulo, contenedorTodos);
+  }
+
+  // Filtrar productos de manera más eficiente
+  let productosFiltrados = todosProductos;
+  
+  if (filtro || categoria !== "all" || disponible !== "all") {
+    const filtroLower = filtro ? filtro.toLowerCase() : '';
+    productosFiltrados = productosFiltrados.filter(producto => {
+      if (filtro && !(
+        producto.nombre.toLowerCase().includes(filtroLower) ||
+        (producto.categoria && producto.categoria.toLowerCase().includes(filtroLower)) ||
+        (producto.descripcion && producto.descripcion.toLowerCase().includes(filtroLower))
+      )) {
+        return false;
+      }
+      if (categoria !== "all" && producto.categoria !== categoria) return false;
+      if (disponible === "available" && !producto.disponible) return false;
+      if (disponible === "unavailable" && producto.disponible) return false;
+      return true;
     });
+  }
 
-    // Crear o actualizar el contenedor de resultados de búsqueda
-    let resultadosTitulo = document.getElementById("resultados-titulo");
-    if (!resultadosTitulo) {
-      resultadosTitulo = document.createElement("div");
-      resultadosTitulo.id = "resultados-titulo";
-      resultadosTitulo.className = "resultados-busqueda";
-      const sectionTodos = document.getElementById("todos");
-      sectionTodos.insertBefore(resultadosTitulo, contenedorTodos);
-    }
-
-    // Filtrar productos de manera más eficiente
-    let productosFiltrados = todosProductos;
+  // Mostrar u ocultar el título de resultados según el filtro
+  const tituloTodos = document.querySelector("#todos h2:not(#resultados-titulo)");
+  if (filtro || categoria !== "all" || disponible !== "all") {
+    const totalResultados = productosFiltrados.length;
+    const terminoBusqueda = filtro || 'todos los productos';
+    const categoriaFiltro = categoria !== "all" ? ` en ${getCategoriaDisplayName(categoria)}` : '';
+    const disponibilidadFiltro = disponible !== "all" ? ` (${disponible === "available" ? "disponibles" : "no disponibles"})` : '';
     
-    // Aplicar todos los filtros en una sola pasada
-    if (filtro || categoria !== "all" || disponible !== "all") {
-      const filtroLower = filtro ? filtro.toLowerCase() : '';
-      productosFiltrados = productosFiltrados.filter(producto => {
-        // Filtro de texto
-        if (filtro && !(
-          producto.nombre.toLowerCase().includes(filtroLower) ||
-          (producto.categoria && producto.categoria.toLowerCase().includes(filtroLower)) ||
-          (producto.descripcion && producto.descripcion.toLowerCase().includes(filtroLower))
-        )) {
-          return false;
-        }
-        
-        // Filtro de categoría
-        if (categoria !== "all" && producto.categoria !== categoria) {
-          return false;
-        }
-        
-        // Filtro de disponibilidad
-        if (disponible === "available" && !producto.disponible) {
-          return false;
-        }
-        if (disponible === "unavailable" && producto.disponible) {
-          return false;
-        }
-        
-        return true;
-      });
-    }
-
-    // Mostrar u ocultar el título de resultados según el filtro
-    const tituloTodos = document.querySelector("#todos h2:not(#resultados-titulo)");
-    if (filtro || categoria !== "all" || disponible !== "all") {
-      const totalResultados = productosFiltrados.length;
-      const terminoBusqueda = filtro || 'todos los productos';
-      const categoriaFiltro = categoria !== "all" ? ` en ${getCategoriaDisplayName(categoria)}` : '';
-      const disponibilidadFiltro = disponible !== "all" ? ` (${disponible === "available" ? "disponibles" : "no disponibles"})` : '';
-      
-      resultadosTitulo.innerHTML = `
-        <div class="resultados-header">
-          <div class="resultados-info">
-            <i class="fas fa-search"></i>
-            <span class="resultados-texto">
-              ${totalResultados === 1 ? '1 producto encontrado' : `${totalResultados} productos encontrados`}
-            </span>
-          </div>
-          <div class="resultados-filtros">
-            <span class="termino-busqueda">"${terminoBusqueda}"</span>
-            ${categoriaFiltro ? `<span class="filtro-categoria">${categoriaFiltro}</span>` : ''}
-            ${disponibilidadFiltro ? `<span class="filtro-disponibilidad">${disponibilidadFiltro}</span>` : ''}
-          </div>
+    resultadosTitulo.innerHTML = `
+      <div class="resultados-header">
+        <div class="resultados-info">
+          <i class="fas fa-search"></i>
+          <span class="resultados-texto">
+            ${totalResultados === 1 ? '1 producto encontrado' : `${totalResultados} productos encontrados`}
+          </span>
         </div>
-        ${filtro ? `<div class="sugerencias-busqueda">
-          <span>Sugerencias:</span>
-          <button class="sugerencia-btn" data-sugerencia="${getSugerenciaBusqueda(filtro)}">${getSugerenciaBusqueda(filtro)}</button>
-        </div>` : ''}
-      `;
-      resultadosTitulo.style.display = "block";
-      if (tituloTodos) tituloTodos.style.display = "none";
-      
-      // Configurar sugerencias de búsqueda
-      configurarSugerenciasBusqueda();
-    } else {
-      resultadosTitulo.style.display = "none";
-      if (tituloTodos) tituloTodos.style.display = "block";
-    }
-
-    // Renderizar productos o mensaje de no resultados
-    if (productosFiltrados.length === 0) {
-      const terminoBusqueda = filtro || 'los filtros seleccionados';
-      const categoriaFiltro = categoria !== "all" ? ` en ${getCategoriaDisplayName(categoria)}` : '';
-      const disponibilidadFiltro = disponible !== "all" ? ` (${disponible === "available" ? "disponibles" : "no disponibles"})` : '';
-      
-      contenedorTodos.innerHTML = `
-        <div class="sin-resultados-container">
-          <div class="sin-resultados-icono">
-            <i class="fas fa-search"></i>
-          </div>
-          <h3 class="sin-resultados-titulo">No se encontraron productos</h3>
-          <p class="sin-resultados-texto">
-            No hay productos que coincidan con <strong>"${terminoBusqueda}"</strong>${categoriaFiltro}${disponibilidadFiltro}
-          </p>
-          <div class="sin-resultados-sugerencias">
-            <p>Sugerencias:</p>
-            <ul>
-              <li>Verifica que las palabras estén escritas correctamente</li>
-              <li>Intenta con términos más generales</li>
-              <li>Prueba con sinónimos</li>
-              <li>Revisa los filtros aplicados</li>
-            </ul>
-          </div>
-          <button class="btn-limpiar-busqueda" onclick="limpiarBusqueda()">
-            <i class="fas fa-times"></i> Limpiar búsqueda
-          </button>
+        <div class="resultados-filtros">
+          <span class="termino-busqueda">"${terminoBusqueda}"</span>
+          ${categoriaFiltro ? `<span class="filtro-categoria">${categoriaFiltro}</span>` : ''}
+          ${disponibilidadFiltro ? `<span class="filtro-disponibilidad">${disponibilidadFiltro}</span>` : ''}
         </div>
-      `;
+      </div>
+      ${filtro ? `<div class="sugerencias-busqueda">
+        <span>Sugerencias:</span>
+        <button class="sugerencia-btn" data-sugerencia="${getSugerenciaBusqueda(filtro)}">${getSugerenciaBusqueda(filtro)}</button>
+      </div>` : ''}
+    `;
+    resultadosTitulo.style.display = "block";
+    if (tituloTodos) tituloTodos.style.display = "none";
+    configurarSugerenciasBusqueda();
+  } else {
+    resultadosTitulo.style.display = "none";
+    if (tituloTodos) tituloTodos.style.display = "block";
+  }
+
+  // Renderizar productos o mensaje de no resultados
+  if (productosFiltrados.length === 0) {
+    const terminoBusqueda = filtro || 'los filtros seleccionados';
+    const categoriaFiltro = categoria !== "all" ? ` en ${getCategoriaDisplayName(categoria)}` : '';
+    const disponibilidadFiltro = disponible !== "all" ? ` (${disponible === "available" ? "disponibles" : "no disponibles"})` : '';
+    
+    contenedorTodos.innerHTML = `
+      <div class="sin-resultados-container">
+        <div class="sin-resultados-icono">
+          <i class="fas fa-search"></i>
+        </div>
+        <h3 class="sin-resultados-titulo">No se encontraron productos</h3>
+        <p class="sin-resultados-texto">
+          No hay productos que coincidan con <strong>"${terminoBusqueda}"</strong>${categoriaFiltro}${disponibilidadFiltro}
+        </p>
+        <div class="sin-resultados-sugerencias">
+          <p>Sugerencias:</p>
+          <ul>
+            <li>Verifica que las palabras estén escritas correctamente</li>
+            <li>Intenta con términos más generales</li>
+            <li>Prueba con sinónimos</li>
+            <li>Revisa los filtros aplicados</li>
+          </ul>
+        </div>
+        <button class="btn-limpiar-busqueda" onclick="limpiarBusqueda()">
+          <i class="fas fa-times"></i> Limpiar búsqueda
+        </button>
+      </div>
+    `;
+    contenedorTodos.classList.add('sin-resultados');
+  } else {
+    contenedorTodos.classList.remove('sin-resultados');
+    const fragmentTodos = document.createDocumentFragment();
+    const fragmentosSecciones = {};
+    
+    productosFiltrados.forEach(producto => {
+      const productoHTML = crearHTMLProducto(producto);
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = productoHTML;
+      const productoElement = tempDiv.firstElementChild;
+      fragmentTodos.appendChild(productoElement);
       
-      // Agregar clase para cambiar el display del contenedor
-      contenedorTodos.classList.add('sin-resultados');
-    } else {
-      // Remover clase de sin resultados si existe
-      contenedorTodos.classList.remove('sin-resultados');
-      
-      // Optimización: usar DocumentFragment para renderizado en lote
-      const fragmentTodos = document.createDocumentFragment();
-      const fragmentosSecciones = {};
-      
-      productosFiltrados.forEach(producto => {
-        const productoHTML = crearHTMLProducto(producto);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = productoHTML;
-        const productoElement = tempDiv.firstElementChild;
-        
-        fragmentTodos.appendChild(productoElement);
-        
-        if (!filtro && categoria === "all" && disponible === "all") {
-          const seccion = document.getElementById(producto.categoria);
-          if (seccion) {
-            const contenedor = seccion.querySelector(".productos-container");
-            if (contenedor) {
-              if (!fragmentosSecciones[producto.categoria]) {
-                fragmentosSecciones[producto.categoria] = document.createDocumentFragment();
-              }
-              // Clonar el elemento para evitar duplicados
-              fragmentosSecciones[producto.categoria].appendChild(productoElement.cloneNode(true));
-            }
-          }
-        }
-        
-        // Siempre agregar productos de ofertas a fragmentosSecciones
-        if (producto.categoria === 'ofertas') {
-          const seccionOfertas = document.getElementById('ofertas');
-          if (seccionOfertas) {
-            const contenedorOfertas = seccionOfertas.querySelector(".productos-container");
-            if (contenedorOfertas) {
-              if (!fragmentosSecciones['ofertas']) {
-                fragmentosSecciones['ofertas'] = document.createDocumentFragment();
-              }
-              fragmentosSecciones['ofertas'].appendChild(productoElement.cloneNode(true));
-            }
-          }
-        }
-        
-      });
-      
-      // Limpiar contenedor "todos" y controles existentes
-      contenedorTodos.innerHTML = "";
-      const seccionTodos = document.getElementById("todos");
-      if (seccionTodos) {
-        const controlesExistentesTodos = seccionTodos.querySelector('.controles-ver-mas');
-        if (controlesExistentesTodos) {
-          controlesExistentesTodos.remove();
-        }
-      }
-      
-      // Mostrar solo los primeros 7 productos en "todos"
-      const productosVisiblesTodos = productosFiltrados.slice(0, 7);
-      const fragmentoTodos = document.createDocumentFragment();
-      
-      productosVisiblesTodos.forEach(producto => {
-        const productoHTML = crearHTMLProducto(producto);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = productoHTML;
-        fragmentoTodos.appendChild(tempDiv.firstElementChild);
-      });
-      
-      contenedorTodos.appendChild(fragmentoTodos);
-      
-      // Agregar controles "Ver más" para la sección "todos" si hay más de 7 productos
-      if (productosFiltrados.length > 7 && seccionTodos) {
-        const contenedorControlesTodos = document.createElement('div');
-        contenedorControlesTodos.className = 'controles-ver-mas';
-        contenedorControlesTodos.innerHTML = `
-          <div class="contador-productos">
-            Mostrando ${productosVisiblesTodos.length} de ${productosFiltrados.length} productos
-          </div>
-          <button class="btn-ver-mas" data-categoria="todos" data-mostrando="7">
-            Ver más productos
-          </button>
-        `;
-        seccionTodos.appendChild(contenedorControlesTodos);
-      }
-      
-      // Aplicar fragmentos a las secciones con sistema de "Ver más"
-      Object.keys(fragmentosSecciones).forEach(categoria => {
-        const seccion = document.getElementById(categoria);
+      if (!filtro && categoria === "all" && disponible === "all") {
+        const seccion = document.getElementById(producto.categoria);
         if (seccion) {
           const contenedor = seccion.querySelector(".productos-container");
           if (contenedor) {
-            // Limpiar contenedor y controles existentes
-            contenedor.innerHTML = "";
-            const controlesExistentes = seccion.querySelector('.controles-ver-mas');
-            if (controlesExistentes) {
-              controlesExistentes.remove();
+            if (!fragmentosSecciones[producto.categoria]) {
+              fragmentosSecciones[producto.categoria] = document.createDocumentFragment();
             }
-            
-            // Obtener todos los productos de esta categoría
-            const productosCategoria = productosFiltrados.filter(p => p.categoria === categoria);
-            const totalProductos = productosCategoria.length;
-            
-            if (totalProductos > 0) {
-              // Mostrar solo los primeros 7 productos
-              const productosVisibles = productosCategoria.slice(0, 7);
-              const fragmentoVisible = document.createDocumentFragment();
-              
-              productosVisibles.forEach(producto => {
-                const productoHTML = crearHTMLProducto(producto);
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = productoHTML;
-                fragmentoVisible.appendChild(tempDiv.firstElementChild);
-              });
-              
-              contenedor.appendChild(fragmentoVisible);
-              
-              // Agregar contador y botón "Ver más" si hay más de 7 productos
-              if (totalProductos > 7) {
-                const contenedorControles = document.createElement('div');
-                contenedorControles.className = 'controles-ver-mas';
-                contenedorControles.innerHTML = `
-                  <div class="contador-productos">
-                    Mostrando ${productosVisibles.length} de ${totalProductos} productos
-                  </div>
-                  <button class="btn-ver-mas" data-categoria="${categoria}" data-mostrando="7">
-                    Ver más productos
-                  </button>
-                `;
-                seccion.appendChild(contenedorControles);
-              }
-            }
+            fragmentosSecciones[producto.categoria].appendChild(productoElement.cloneNode(true));
           }
         }
-      });
-      
-      
-    }
-
-    // Mostrar u ocultar mensaje en la sección de ofertas
-    const seccionOfertas = document.getElementById('ofertas');
-    if (seccionOfertas) {
-      let mensajeSinOfertas = seccionOfertas.querySelector('.mensaje-sin-ofertas');
-      if (!mensajeSinOfertas) {
-        mensajeSinOfertas = document.createElement('p');
-        mensajeSinOfertas.className = 'mensaje-sin-ofertas';
-        mensajeSinOfertas.textContent = 'No hay ofertas disponibles en este momento.';
-        mensajeSinOfertas.style.display = 'none';
-        seccionOfertas.insertBefore(mensajeSinOfertas, seccionOfertas.querySelector('.productos-container'));
       }
-
-      const contenedorOfertas = seccionOfertas.querySelector('.productos-container');
-      if (contenedorOfertas && contenedorOfertas.children.length === 0) {
-        mensajeSinOfertas.style.display = 'block';
-      } else {
-        mensajeSinOfertas.style.display = 'none';
-      }
-    }
-
-    // Ocultar secciones vacías o no relevantes
-    secciones.forEach(seccion => {
-      const contenedor = seccion.querySelector(".productos-container");
-      if (contenedor) {
-        seccion.style.display = (filtro || categoria !== "all" || disponible !== "all") && seccion.id !== "todos" && contenedor.children.length === 0 ? "none" : "block";
+      if (producto.categoria === 'ofertas') {
+        const seccionOfertas = document.getElementById('ofertas');
+        if (seccionOfertas) {
+          const contenedorOfertas = seccionOfertas.querySelector(".productos-container");
+          if (contenedorOfertas) {
+            if (!fragmentosSecciones['ofertas']) {
+              fragmentosSecciones['ofertas'] = document.createDocumentFragment();
+            }
+            fragmentosSecciones['ofertas'].appendChild(productoElement.cloneNode(true));
+          }
+        }
       }
     });
 
-    // Configurar eventos solo si es necesario
-    if (!window.eventosConfigurados) {
-    setupProductosConTonos();
-    configurarBotonesAgregar();
-      configurarBotonesVerMas();
-      // lightbox.init(); // deshabilitado: se usa modal propio
-      window.eventosConfigurados = true;
+    contenedorTodos.innerHTML = "";
+    const seccionTodos = document.getElementById("todos");
+    if (seccionTodos) {
+      const controlesExistentesTodos = seccionTodos.querySelector('.controles-ver-mas');
+      if (controlesExistentesTodos) controlesExistentesTodos.remove();
     }
 
-    if (loadingIndicator) loadingIndicator.style.display = "none";
+    const productosVisiblesTodos = productosFiltrados.slice(0, 7);
+    const fragmentoTodos = document.createDocumentFragment();
+    productosVisiblesTodos.forEach(producto => {
+      const productoHTML = crearHTMLProducto(producto);
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = productoHTML;
+      fragmentoTodos.appendChild(tempDiv.firstElementChild);
+    });
+    contenedorTodos.appendChild(fragmentoTodos);
+
+    if (productosFiltrados.length > 7 && seccionTodos) {
+      const contenedorControlesTodos = document.createElement('div');
+      contenedorControlesTodos.className = 'controles-ver-mas';
+      contenedorControlesTodos.innerHTML = `
+        <div class="contador-productos">
+          Mostrando ${productosVisiblesTodos.length} de ${productosFiltrados.length} productos
+        </div>
+        <button class="btn-ver-mas" data-categoria="todos" data-mostrando="7">
+          Ver más productos
+        </button>
+      `;
+      seccionTodos.appendChild(contenedorControlesTodos);
+    }
+
+    Object.keys(fragmentosSecciones).forEach(categoria => {
+      const seccion = document.getElementById(categoria);
+      if (seccion) {
+        const contenedor = seccion.querySelector(".productos-container");
+        if (contenedor) {
+          contenedor.innerHTML = "";
+          const controlesExistentes = seccion.querySelector('.controles-ver-mas');
+          if (controlesExistentes) controlesExistentes.remove();
+          const productosCategoria = productosFiltrados.filter(p => p.categoria === categoria);
+          const totalProductos = productosCategoria.length;
+          if (totalProductos > 0) {
+            const productosVisibles = productosCategoria.slice(0, 7);
+            const fragmentoVisible = document.createDocumentFragment();
+            productosVisibles.forEach(producto => {
+              const productoHTML = crearHTMLProducto(producto);
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = productoHTML;
+              fragmentoVisible.appendChild(tempDiv.firstElementChild);
+            });
+            contenedor.appendChild(fragmentoVisible);
+            if (totalProductos > 7) {
+              const contenedorControles = document.createElement('div');
+              contenedorControles.className = 'controles-ver-mas';
+              contenedorControles.innerHTML = `
+                <div class="contador-productos">
+                  Mostrando ${productosVisibles.length} de ${totalProductos} productos
+                </div>
+                <button class="btn-ver-mas" data-categoria="${categoria}" data-mostrando="7">
+                  Ver más productos
+                </button>
+              `;
+              seccion.appendChild(contenedorControles);
+            }
+          }
+        }
+      }
+    });
   }
 
+  // Mostrar u ocultar mensaje en la sección de ofertas
+  const seccionOfertas = document.getElementById('ofertas');
+  if (seccionOfertas) {
+    let mensajeSinOfertas = seccionOfertas.querySelector('.mensaje-sin-ofertas');
+    if (!mensajeSinOfertas) {
+      mensajeSinOfertas = document.createElement('p');
+      mensajeSinOfertas.className = 'mensaje-sin-ofertas';
+      mensajeSinOfertas.textContent = 'No hay ofertas disponibles en este momento.';
+      mensajeSinOfertas.style.display = 'none';
+      seccionOfertas.insertBefore(mensajeSinOfertas, seccionOfertas.querySelector('.productos-container'));
+    }
+    const contenedorOfertas = seccionOfertas.querySelector('.productos-container');
+    if (contenedorOfertas && contenedorOfertas.children.length === 0) {
+      mensajeSinOfertas.style.display = 'block';
+    } else {
+      mensajeSinOfertas.style.display = 'none';
+    }
+  }
+
+  // Ocultar secciones vacías o no relevantes
+  secciones.forEach(seccion => {
+    const contenedor = seccion.querySelector(".productos-container");
+    if (contenedor) {
+      seccion.style.display = (filtro || categoria !== "all" || disponible !== "all") && seccion.id !== "todos" && contenedor.children.length === 0 ? "none" : "block";
+    }
+  });
+
+  // 🔥 Configurar eventos SIEMPRE después de renderizar
+  setupProductosConTonos();
+  configurarBotonesAgregar();
+  configurarBotonesVerMas();
+
+  if (loadingIndicator) loadingIndicator.style.display = "none";
+}
 
 
   // Cache para evitar cálculos repetitivos
@@ -1197,5 +1146,3 @@ document.addEventListener('DOMContentLoaded', function() {
   cargarProductos();
   actualizarCarrito();
 });
-
-
