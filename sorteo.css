@@ -122,7 +122,7 @@ nav a:hover {
 /* HERO DEL SORTEO MEJORADO */
 /* ==================== */
 .hero-sorteo {
-  background: linear-gradient(135deg, var(--rosa-sorteo) 0%, #FFC0CB 50%, var(--rosa-oscuro-sorteo  ) 100%);
+  background: linear-gradient(135deg, var(--rosa-sorteo) 0%, #d67988 50%, var(--rosa-oscuro-sorteo  ) 100%);
   padding: 6rem 2rem;
   text-align: center;
   position: relative;
@@ -1900,5 +1900,161 @@ footer {
     width: 40px;
     height: 40px;
     font-size: 0.8rem;
+  }
+}
+/* ==================== */
+/* ESTILOS MEJORADOS PARA EL SORTEO DÍA DE LA MADRE */
+/* ==================== */
+
+/* Ajustes específicos para el tema del Día de la Madre */
+.hero-sorteo {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 50%, #DB7093 100%);
+}
+
+.titulo-sorteo {
+  color: #C71585; /* Rosa más oscuro para el Día de la Madre */
+}
+
+.precio-destacado {
+  color: #C71585;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mejoras para el aviso inferior */
+.aviso-contenido-inferior {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(255, 248, 220, 0.95);
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  border: 3px solid var(--dorado-sorteo);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  backdrop-filter: blur(10px);
+  max-width: 900px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.aviso-redes-iconos .btn-principal {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+/* Mejoras para la lista de premios */
+.productos-incluidos {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.productos-incluidos li {
+  font-size: 1.1rem;
+  color: var(--negro);
+  margin-bottom: 0.8rem;
+  padding-left: 2rem;
+  position: relative;
+  background: rgba(255, 182, 193, 0.1);
+  padding: 0.8rem;
+  border-radius: 8px;
+}
+
+.productos-incluidos li::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+/* Aviso importante */
+.aviso-importante {
+  background: rgba(255, 215, 0, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 2px solid #FFD700;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.aviso-importante h3 {
+  color: var(--púrpura-sorteo);
+  margin-bottom: 1rem;
+}
+
+.aviso-importante p {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Botones mejorados */
+.btn-comprobante {
+  background: #25D366;
+  color: white;
+  padding: 1.2rem 2.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-comprobante:hover {
+  background: #128C7E;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .aviso-contenido-inferior {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .productos-incluidos {
+    grid-template-columns: 1fr;
+  }
+  
+  .aviso-redes-iconos .btn-principal {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .aviso-contenido-inferior {
+    padding: 1rem;
+  }
+  
+  .productos-incluidos li {
+    font-size: 1rem;
+    padding: 0.6rem 0.6rem 0.6rem 2rem;
+  }
+  
+  .btn-comprobante {
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
 }
