@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'correctores': 'Correctores',
       'esponjitas': 'Esponjitas',
       'labiales': 'Labiales',
-      'pestanas': 'Pestañas/Cejas',
+      'pestanas-cejas': 'Pestañas/Cejas',
       'primer': 'Primer',
       'skincare': 'Skincare',
       'uñas': 'Uñas',
@@ -1197,4 +1197,5 @@ document.addEventListener('DOMContentLoaded', function() {
   cargarProductos();
   actualizarCarrito();
 });
+
 
